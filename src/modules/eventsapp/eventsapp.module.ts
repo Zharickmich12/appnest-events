@@ -10,7 +10,7 @@ import { Event } from 'src/entities/event.entity';
 // Decorador @Module:
 // Configura los componentes del módulo de eventos.
 @Module({
-  // Importa TypeORM y registra las entidades relacionadas con los eventos.
+  // Importa TypeORM Y la entidad Event para que TypeORM pueda interactuar con la tabla `event`
   imports: [TypeOrmModule.forFeature([Event])],
   // Controlador que maneja las peticiones HTTP sobre los eventos.
   controllers: [EventsappController],

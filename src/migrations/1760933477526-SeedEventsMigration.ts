@@ -39,9 +39,7 @@ export class SeedEventsMigration1760933477526 implements MigrationInterface {
         `);
     }
 
-    /**
-     * Elimina los registros de eventos creados en el método up.
-     */
+    //Elimina los registros de eventos creados en el método up.
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             DELETE FROM event

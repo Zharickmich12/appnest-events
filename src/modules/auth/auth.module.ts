@@ -16,6 +16,7 @@ import { User } from 'src/entities/user.entity';
   // Importa la configuración global (.env) y el módulo TypeORM.
   imports:[
     ConfigModule.forRoot({isGlobal:true}),
+    // Registro de la entidad User para que TypeORM pueda interactuar con la tabla `user`
     TypeOrmModule.forFeature([User]),
   ],
 

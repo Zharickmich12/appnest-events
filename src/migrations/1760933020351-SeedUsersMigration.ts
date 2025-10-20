@@ -20,9 +20,7 @@ export class SeedUsersMigration1760933020351 implements MigrationInterface {
         `);
     }
 
-    /**
-     * Elimina los usuarios insertados en el método up.
-    */
+     //Elimina los usuarios insertados en el método up.
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
         DELETE FROM user WHERE email IN (
@@ -32,4 +30,4 @@ export class SeedUsersMigration1760933020351 implements MigrationInterface {
         );
         `);
     }
-    }
+}

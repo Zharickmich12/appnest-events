@@ -29,6 +29,6 @@ export default new DataSource({
   username: process.env.DB_USERNAME, // Nombre del usuario autorizado a acceder a la base de datos.
   password: process.env.DB_PASSWORD, // Contraseña del usuario
   database: process.env.DB_NAME, // Nombre de la base de datos que usará la aplicación.
-  entities: [ User, Event, EventRegistration],
-  migrations: ['src/migrations/*.ts']
+  entities: [ User, Event, EventRegistration], // Entidades que TypeORM gestionará
+  migrations: ['src/migrations/*.ts'] // Ubicación de los archivos de migraciones
 });

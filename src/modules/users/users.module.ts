@@ -10,8 +10,7 @@ import { User } from 'src/entities/user.entity';
 // Decorador @Module:
 // Define los componentes que pertenecen al módulo de usuarios.
 @Module({
-  // Importa TypeORM y registra las entidades relacionadas con los usuarios.
-  // Actualmente se deja el arreglo vacío hasta definir la entidad User.
+  // Importa TypeORM y la entidad User para que TypeORM pueda interactuar con la tabla `user`
   imports:[TypeOrmModule.forFeature([User])], 
   // Controlador responsable de manejar las rutas relacionadas con usuarios.
   controllers: [UsersController],

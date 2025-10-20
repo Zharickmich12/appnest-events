@@ -13,7 +13,8 @@ import { EventRegistration } from 'src/entities/event-registration.entity';
 // Decorador @Module:
 // Registra los componentes del módulo de registros.
 @Module({
-  // Importa los módulos necesarios para acceder a usuarios y eventos.
+  // Importa la entidad EventRegistration para que TypeORM pueda interactuar con la tabla `event_registration`
+  // e importa los módulos de Users y Events para acceder a sus servicios
   imports: [
     TypeOrmModule.forFeature([EventRegistration]),
     UsersModule, 

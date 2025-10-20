@@ -3,9 +3,7 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 export class SeedEventRegistrationMigration1760933989368 implements MigrationInterface {
     name = 'SeedEventRegistrationMigration1760933989368'
 
-    /**
-     * Inserta registros de inscripción de usuarios a eventos de ejemplo.
-    */
+    //Inserta registros de inscripción de usuarios a eventos de ejemplo.
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             INSERT INTO event_registration (userId, eventId, registeredAt)
@@ -18,9 +16,7 @@ export class SeedEventRegistrationMigration1760933989368 implements MigrationInt
         `);
     }
 
-    /**
-     * Elimina los registros insertados por este seed.
-    */
+    //Elimina los registros insertados por este seed.
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             DELETE FROM event_registration
