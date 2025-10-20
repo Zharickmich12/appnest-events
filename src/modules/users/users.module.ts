@@ -5,13 +5,14 @@ import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/entities/user.entity';
 
 // Decorador @Module:
 // Define los componentes que pertenecen al módulo de usuarios.
 @Module({
   // Importa TypeORM y registra las entidades relacionadas con los usuarios.
   // Actualmente se deja el arreglo vacío hasta definir la entidad User.
-  imports:[TypeOrmModule.forFeature([])], 
+  imports:[TypeOrmModule.forFeature([User])], 
   // Controlador responsable de manejar las rutas relacionadas con usuarios.
   controllers: [UsersController],
    // Servicio que contiene la lógica de negocio y operaciones sobre los usuarios.

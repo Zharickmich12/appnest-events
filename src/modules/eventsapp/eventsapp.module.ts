@@ -5,12 +5,13 @@ import { Module } from '@nestjs/common';
 import { EventsappController } from './eventsapp.controller';
 import { EventsappService } from './eventsapp.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Event } from 'src/entities/event.entity';
 
 // Decorador @Module:
 // Configura los componentes del módulo de eventos.
 @Module({
   // Importa TypeORM y registra las entidades relacionadas con los eventos.
-  imports: [TypeOrmModule.forFeature([])],
+  imports: [TypeOrmModule.forFeature([Event])],
   // Controlador que maneja las peticiones HTTP sobre los eventos.
   controllers: [EventsappController],
   // Servicio que contiene la lógica de negocio de los eventos.

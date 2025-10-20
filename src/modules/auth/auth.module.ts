@@ -7,6 +7,7 @@ import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
+import { User } from 'src/entities/user.entity';
 
 // Decorador @Module:
 // Define la estructura y dependencias del módulo de autenticación.
@@ -15,7 +16,7 @@ import { UsersService } from '../users/users.service';
   // Importa la configuración global (.env) y el módulo TypeORM.
   imports:[
     ConfigModule.forRoot({isGlobal:true}),
-    TypeOrmModule.forFeature([]),
+    TypeOrmModule.forFeature([User]),
   ],
 
   // Controlador que maneja las rutas de autenticación (login, registro, etc.).
