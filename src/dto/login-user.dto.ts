@@ -10,8 +10,8 @@ export class LoginUserDTO {
   @IsEmail({}, { message: 'Debe ser un correo electrónico válido' })
   email: string;
 
-  // Contraseña del usuario (obligatoria, entre 5 y 10 caracteres).
+  // Contraseña del usuario (obligatoria, entre 5 y 12 caracteres).
   @IsNotEmpty({ message: 'La contraseña es obligatoria' })
-  @Length(5, 10, { message: 'La contraseña debe tener entre 5 y 10 caracteres' })
+  @Length(5, 12, { message: 'La contraseña debe tener entre 5 y 12 caracteres' })
   password: string;
 }
