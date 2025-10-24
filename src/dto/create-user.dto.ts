@@ -16,13 +16,16 @@ export class CreateUserDto {
 
   // Contraseña entre 5 y 12 caracteres (obligatoria).
   @IsNotEmpty({ message: 'La contraseña es obligatoria.' })
-  @Length(5, 12, { message: 'La contraseña debe tener entre 5 y 12 caracteres.' })
+  @Length(5, 12, {
+    message: 'La contraseña debe tener entre 5 y 12 caracteres.',
+  })
   password: string;
 
-  
   // Rol del usuario dentro del sistema (opcional).
   // Puede ser 'admin', 'organizer' o 'attendee'. Valor por defecto: 'attendee'.
   @IsOptional()
-  @IsIn(['admin', 'organizer', 'attendee'], { message: 'El rol debe ser admin, organizer o attendee.' })
+  @IsIn(['admin', 'organizer', 'attendee'], {
+    message: 'El rol debe ser admin, organizer o attendee.',
+  })
   role?: 'admin' | 'organizer' | 'attendee';
 }

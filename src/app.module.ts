@@ -17,22 +17,21 @@ import { UsersModule } from './modules/users/users.module';
 @Module({
   imports: [
     // Carga de variables desde el archivo .env y las hace accesibles globalmente.
-    ConfigModule.forRoot({isGlobal:true}),
-    
+    ConfigModule.forRoot({ isGlobal: true }),
+
     // Configuración asincrónica de TypeORM usando variables del .env
     TypeOrmModule.forRootAsync({
-      imports:[ConfigModule], // Importa ConfigModule para leer valores
-      inject:[ConfigService], // Inyecta el servicio de configuración
-      useFactory:(config:ConfigService)=>({
+      imports: [ConfigModule], // Importa ConfigModule para leer valores
+      inject: [ConfigService], // Inyecta el servicio de configuración
+      useFactory: (config: ConfigService) => ({
         type: 'mysql', // Tipo de base de datos
         host: config.get<string>('DB_HOST'), // Dirección del servidor
         port: config.get<number>('DB_PORT'), // Puerto de conexión
         username: config.get<string>('DB_USERNAME'), // Usuario de conexión
         password: config.get<string>('DB_PASSWORD'), // Contraseña del usuario
         database: config.get<string>('DB_NAME'), // Nombre de la base de datos
-        autoLoadEntities: true,// Carga automáticamente las entidades
-        synchronize: false,  // Desactiva sincronización automática (producción)
-      
+        autoLoadEntities: true, // Carga automáticamente las entidades
+        synchronize: false, // Desactiva sincronización automática (producción)
       }),
     }),
     // Registro de los módulos de la aplicación.
@@ -40,7 +39,6 @@ import { UsersModule } from './modules/users/users.module';
     AuthModule,
     EventsModule,
     RegistrationsModule,
-    
   ],
   // Controladores principales de la aplicación.
   controllers: [AppController],

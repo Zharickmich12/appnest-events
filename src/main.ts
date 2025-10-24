@@ -14,22 +14,22 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // Configura validaciones globales para todos los endpoints.
   app.useGlobalPipes(
-    new ValidationPipe({ 
+    new ValidationPipe({
       whitelist: true, // Elimina propiedades no definidas en los DTO
       forbidNonWhitelisted: true, // Lanza error si se recibe un campo no permitido
-      transform: true,  // Convierte los tipos automáticamente según el DTO
-    })
-  )
+      transform: true, // Convierte los tipos automáticamente según el DTO
+    }),
+  );
 
   // Define el puerto del servidor (usa variable de entorno o el valor por defecto 3000).
   const port = process.env.PORT || 3000;
-  
+
   // Inicia la aplicación y la deja escuchando en el puerto configurado.
   await app.listen(port);
 
   // Muestra en consola la URL donde se ejecuta la aplicación.
-  console.log(`Application running on: http://localhost:${port}`)
+  console.log(`Application running on: http://localhost:${port}`);
 }
 
-// Llamada a la función principal de arranque.
-bootstrap();
+// Llamada a la función principal de arranque. (cambio hecho por que parecia advertencia)
+void bootstrap();
