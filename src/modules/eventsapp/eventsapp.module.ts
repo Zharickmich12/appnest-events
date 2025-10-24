@@ -17,6 +17,6 @@ import { Event } from 'src/entities/event.entity';
   // Servicio que contiene la lógica de negocio de los eventos.
   providers: [EventsAppService],
   // Exporta el servicio para permitir su uso en otros módulos (como Registrations).
-  exports: [EventsAppService],
+  exports: [EventsAppService, TypeOrmModule],
 })
 export class EventsModule {}

@@ -17,11 +17,12 @@ import { EventRegistration } from 'src/entities/event-registration.entity';
   // e importa los módulos de Users y Events para acceder a sus servicios
   imports: [
     TypeOrmModule.forFeature([EventRegistration]),
-    UsersModule, 
-    EventsModule],
+    UsersModule,
+    EventsModule,
+  ],
   // Controlador responsable de las rutas relacionadas con inscripciones.
   controllers: [RegistrationsController],
   // Servicio que implementa la lógica de registro y vinculación entre usuarios y eventos.
-  providers: [RegistrationsService]
+  providers: [RegistrationsService],
 })
 export class RegistrationsModule {}
