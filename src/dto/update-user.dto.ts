@@ -17,11 +17,15 @@ export class UpdateUserDto {
 
   // Nueva contraseña entre 5 y 12 caracteres (opcional).
   @IsOptional()
-  @Length(5, 12, { message: 'La contraseña debe tener entre 5 y 12 caracteres.' })
+  @Length(5, 12, {
+    message: 'La contraseña debe tener entre 5 y 12 caracteres.',
+  })
   password?: string;
 
-   // Rol actualizado del usuario dentro del sistema (opcional).
+  // Rol actualizado del usuario dentro del sistema (opcional).
   @IsOptional()
-  @IsIn(['admin', 'organizer', 'attendee'], { message: 'El rol debe ser admin, organizer o attendee.' })
+  @IsIn(['admin', 'organizer', 'attendee'], {
+    message: 'El rol debe ser admin, organizer o attendee.',
+  })
   role?: 'admin' | 'organizer' | 'attendee';
 }

@@ -12,6 +12,8 @@ export class LoginUserDTO {
 
   // Contraseña del usuario (obligatoria, entre 5 y 12 caracteres).
   @IsNotEmpty({ message: 'La contraseña es obligatoria' })
-  @Length(5, 12, { message: 'La contraseña debe tener entre 5 y 12 caracteres' })
+  @Length(5, 12, {
+    message: 'La contraseña debe tener entre 5 y 12 caracteres',
+  })
   password: string;
 }
