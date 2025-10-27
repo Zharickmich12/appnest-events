@@ -12,6 +12,9 @@ import { Event } from 'src/entities/event.entity';
 import { CreateRegistrationDTO } from 'src/dto/create-registration.dto';
 import { UpdateRegistrationDTO } from 'src/dto/update-registration.dto';
 
+// Enum que define los roles del sistema
+import { UserRole } from 'src/entities/user.entity';
+
 // Permite que este servicio pueda ser inyectado en controladores u otros servicios.
 @Injectable()
 export class RegistrationsService {
@@ -59,14 +62,25 @@ export class RegistrationsService {
   }
 
   // Obtener todas las inscripciones de la base de datos
-  async findAll() {
-    const registrations = await this.registrationRepo.find({
-      relations: ['user', 'event'], // Se incluyen relaciones con User y Event
-      order: { id: 'ASC' }, // Ordena los registros por ID
-    });
+  async findAll(user: { userId: number; role: UserRole }): Promise<any[]> {
+    let registrations: EventRegistration[];
 
-    // Da la respuesta de forma mas organizada y facil de entender
-    return registrations.map((r) => ({
+    // Filtra segun el rol, los asistentes solo ven sus registros
+    if (user.role === UserRole.ATTENDEE) {
+      registrations = await this.registrationRepo.find({
+        where: { user: { id: user.userId } },
+        relations: ['user', 'event'], // Incluye datos del usuario y del evento
+        order: { id: 'ASC' },
+      });
+    } else {
+      // Los administradores y organizadores pueden ver todos
+      registrations = await this.registrationRepo.find({
+        relations: ['user', 'event'],
+        order: { id: 'ASC' },
+      });
+    }
+    // Se devuelve un arreglo con la informacion organizada
+    return registrations.map((r: EventRegistration) => ({
       id: r.id,
       registeredAt: r.registeredAt,
       user: {

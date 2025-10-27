@@ -9,13 +9,22 @@ import {
   Delete,
   Body,
   Param,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { RegistrationsService } from './registrations.service';
 import { CreateRegistrationDTO } from 'src/dto/create-registration.dto';
 import { UpdateRegistrationDTO } from 'src/dto/update-registration.dto';
 import { ParseIntPipe } from '@nestjs/common';
 
+// Se importan los guards y decoradores para la proteccion de rutas
+import { JwtAuthGuard } from 'src/modules/auth/jwt.guard';
+import { Roles } from 'src/modules/auth/roles.decorator';
+import { RolesGuard } from 'src/modules/auth/roles.guard';
+import { UserRole } from 'src/entities/user.entity';
+
 // Define el prefijo de las rutas que pertenecen a este controlador
+@UseGuards(JwtAuthGuard, RolesGuard) // Protege todas las rutas del controlador
 @Controller('registrations')
 export class RegistrationsController {
   // Inyeccion del servicio de registros para acceder a la logica de negocio.
@@ -25,6 +34,7 @@ export class RegistrationsController {
   // Metodo HTTP: POST /registrations
 
   @Post()
+  @Roles(UserRole.ADMIN, UserRole.ORGANIZER) // Solo admin y organizer pueden usar esta ruta
   create(@Body() dto: CreateRegistrationDTO) {
     return this.registrationsService.create(dto);
   }
@@ -32,13 +42,16 @@ export class RegistrationsController {
   // Ruta para obtener todos los registros existentes en la base de datos.
   // Metodo HTTP: GET /registrations
   @Get()
-  findAll() {
-    return this.registrationsService.findAll();
+  @Roles(UserRole.ADMIN, UserRole.ORGANIZER, UserRole.ATTENDEE) // todos los roles tienen acceso
+  findAll(@Request() req: { user: { userId: number; role: UserRole } }) {
+    // El decorador @Request permite acceder al usuario autenticado
+    return this.registrationsService.findAll(req.user);
   }
 
   // Ruta para obtener un registro especifico por su ID.
   // Metodo HTTP: GET /registrations/:id
   @Get(':id')
+  @Roles(UserRole.ADMIN, UserRole.ORGANIZER) // Solo admin y organizer pueden usar esta ruta
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.registrationsService.findOne(id);
   }
@@ -47,6 +60,7 @@ export class RegistrationsController {
   // Permite cambiar, por ejemplo, el evento al que un usuario esta inscrito.
   // Metodo HTTP: PUT /registrations/:id
   @Put(':id')
+  @Roles(UserRole.ADMIN, UserRole.ORGANIZER) // Solo admin y organizer usar esta ruta
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateRegistrationDTO,
@@ -57,6 +71,8 @@ export class RegistrationsController {
   // Ruta para eliminar un registro de inscripcion por su ID.
   // Metodo HTTP: DELETE /registrations/:id
   @Delete(':id')
+  @Roles(UserRole.ADMIN)
+  // Solo admin puede usar esta ruta
   remove(@Param('id') id: number) {
     return this.registrationsService.remove(id);
   }

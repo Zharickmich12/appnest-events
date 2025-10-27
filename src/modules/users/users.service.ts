@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 // Servicio encargado de gestionar la lógica de negocio y la persistencia de datos
 // relacionados con los usuarios del sistema. Utiliza TypeORM para interactuar con
 // la base de datos y ejecutar las operaciones CRUD sobre la entidad User.
@@ -32,9 +29,12 @@ export class UsersService {
     const existingUser = await this.userRepository.findOne({
       where: { email: data.email },
     });
-
+    // si existe lanza un error
+    // Esto evita que el SQL lanze el error de duplicate entry
     if (existingUser) {
-      throw new BadRequestException('El correo ya está registrado.');
+      throw new BadRequestException(
+        'No se pudo completar el registro. Verifica tus datos.',
+      );
     }
 
     // Encriptar la contraseña antes de guardar el usuario.

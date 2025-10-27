@@ -1,6 +1,12 @@
 // Entidad que representa un evento dentro del sistema.
 // Contiene información básica del evento y define las relaciones con los usuarios y registros de inscripción.
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { User } from './user.entity';
 import { EventRegistration } from './event-registration.entity';
 
@@ -24,7 +30,7 @@ export class Event {
   @Column()
   date: Date;
 
-    // Columna que almacena la ubicación del evento.
+  // Columna que almacena la ubicación del evento.
   @Column()
   location: string;
 

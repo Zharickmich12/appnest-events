@@ -4,6 +4,13 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Event } from './event.entity';
 import { EventRegistration } from './event-registration.entity';
 
+// Roles posibles de un usuario
+export enum UserRole {
+  ADMIN = 'admin',
+  ORGANIZER = 'organizer',
+  ATTENDEE = 'attendee',
+}
+
 // Decorador @Entity():
 // Indica que esta clase corresponde a una tabla en la base de datos llamada "user".
 @Entity()

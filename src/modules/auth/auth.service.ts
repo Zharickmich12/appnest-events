@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /**
  * @file auth.service.ts
  * @description Servicio que contiene la lógica de negocio para el registro,
@@ -54,7 +51,9 @@ export class AuthService {
     // Si ya existe lanza un error
     // Esto evita que el SQL lanze el error de duplicate entry
     if (existingUser) {
-      throw new BadRequestException('El correo ya está registrado');
+      throw new BadRequestException(
+        'No se pudo completar el registro. Verifica tus datos.',
+      );
     }
 
     // Hashea la contraseña con un 'salt' de 10 rondas

@@ -9,7 +9,15 @@ import {
   Param,
   Body,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
+
+// Se importan los guards y decoradores para la protección de rutas
+import { JwtAuthGuard } from 'src/modules/auth/jwt.guard';
+import { Roles } from 'src/modules/auth/roles.decorator';
+import { RolesGuard } from 'src/modules/auth/roles.guard';
+import { UserRole } from 'src/entities/user.entity';
+
 // Se importa el servicio de eventos
 import { EventsAppService } from './eventsapp.service';
 
@@ -19,6 +27,7 @@ import { UpdateEventDTO } from 'src/dto/update-event.dto';
 
 // Se define el controlador de productos con la ruta base /eventsapp
 @Controller('eventsapp')
+@UseGuards(JwtAuthGuard, RolesGuard) // Protege todas las rutas con autenticación y roles
 export class EventsAppController {
   // Se inyecta el servicio de eventos para usarlo dentro de este controlador
   constructor(private readonly eventsAppService: EventsAppService) {}
@@ -26,6 +35,7 @@ export class EventsAppController {
   // Ruta para obtener todos los eventos que estan en la base de datos
   // Metodo HTTP: GET /eventsapp
   @Get()
+  @Roles(UserRole.ADMIN, UserRole.ORGANIZER, UserRole.ATTENDEE) // todos los roles tienen acceso
   async getEvents() {
     const events = await this.eventsAppService.findAll(); // Obtiene la lista completa de los eventos
     const count = await this.eventsAppService.getEventsCount(); // Cuenta el total de eventos
@@ -40,6 +50,7 @@ export class EventsAppController {
   // Ruta para obtener un evento en especifico por su id
   // Metodo HTTP: GET /eventsapp/:id
   @Get(':id')
+  @Roles(UserRole.ADMIN, UserRole.ORGANIZER, UserRole.ATTENDEE) // todos los roles tienen acceso
   async getEventById(@Param('id', ParseIntPipe) id: number) {
     const event = await this.eventsAppService.findOne(id); // Busca el evento por su id
     // Retorna un mensaje con el evento encontrado
@@ -50,6 +61,7 @@ export class EventsAppController {
   // debe contener title, date, description, location, capacity
   // Metodo HTTP: POST /eventsapp
   @Post()
+  @Roles(UserRole.ADMIN, UserRole.ORGANIZER) // Solo admin y organizer pueden crear
   async create(@Body() dto: CreateEventDTO) {
     return await this.eventsAppService.create(dto);
   }
@@ -58,6 +70,7 @@ export class EventsAppController {
   // Ya sea title, date, description, location, capacity
   // Metodo HTTP: PUT /eventsapp/:id
   @Put(':id')
+  @Roles(UserRole.ADMIN, UserRole.ORGANIZER) // Solo admin y organizer pueden actualizar
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateEventDTO,
@@ -68,6 +81,7 @@ export class EventsAppController {
   // Ruta para eliminar un evento existente por su id
   // Metodo HTTP: DELETE /eventsapp/:id
   @Delete(':id')
+  @Roles(UserRole.ADMIN) // Solo admin puede eliminar
   async remove(@Param('id', ParseIntPipe) id: number) {
     return await this.eventsAppService.remove(id);
   }
