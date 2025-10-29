@@ -1,13 +1,6 @@
 // Entidad que representa un evento dentro del sistema.
 // Contiene información básica del evento y define las relaciones con los usuarios y registros de inscripción.
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
-import { User } from './user.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { EventRegistration } from './event-registration.entity';
 
 // Decorador @Entity():
@@ -38,11 +31,9 @@ export class Event {
   @Column({ default: 100 })
   capacity: number;
 
-  // Relación muchos-a-uno (ManyToOne) con la entidad User:
-  // Indica que cada evento tiene un organizador (usuario),
-  // pero un usuario puede organizar múltiples eventos.
-  @ManyToOne(() => User, (user) => user.events)
-  organizer: User;
+  // Correo electronico asociado al evento osea la persona responsable
+  @Column()
+  email: string;
 
   // Relación uno-a-muchos (OneToMany) con EventRegistration:
   // Un evento puede tener múltiples registros de usuarios inscritos.

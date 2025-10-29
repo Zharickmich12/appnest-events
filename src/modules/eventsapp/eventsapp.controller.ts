@@ -8,8 +8,9 @@ import {
   Delete,
   Param,
   Body,
-  ParseIntPipe,
   UseGuards,
+  UseFilters,
+  UseInterceptors,
 } from '@nestjs/common';
 
 // Se importan los guards y decoradores para la protección de rutas
@@ -17,6 +18,13 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt.guard';
 import { Roles } from 'src/modules/auth/roles.decorator';
 import { RolesGuard } from 'src/modules/auth/roles.guard';
 import { UserRole } from 'src/entities/user.entity';
+
+// Se importan el filtro e interceptor globales.
+import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
+import { SanitizeResponseInterceptor } from 'src/common/interceptors/sanitize-response.interceptor';
+
+// Se importa el pipe personalizado
+import { ParseIntPipeCustom } from 'src/common/pipes/parse-int.pipe';
 
 // Se importa el servicio de eventos
 import { EventsAppService } from './eventsapp.service';
@@ -28,6 +36,8 @@ import { UpdateEventDTO } from 'src/dto/update-event.dto';
 // Se define el controlador de productos con la ruta base /eventsapp
 @Controller('eventsapp')
 @UseGuards(JwtAuthGuard, RolesGuard) // Protege todas las rutas con autenticación y roles
+@UseFilters(HttpExceptionFilter) // Aplica el filtro global de excepciones.
+@UseInterceptors(SanitizeResponseInterceptor) // Interceptor para formatear respuestas y eliminar datos sensibles
 export class EventsAppController {
   // Se inyecta el servicio de eventos para usarlo dentro de este controlador
   constructor(private readonly eventsAppService: EventsAppService) {}
@@ -51,7 +61,7 @@ export class EventsAppController {
   // Metodo HTTP: GET /eventsapp/:id
   @Get(':id')
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER, UserRole.ATTENDEE) // todos los roles tienen acceso
-  async getEventById(@Param('id', ParseIntPipe) id: number) {
+  async getEventById(@Param('id', ParseIntPipeCustom) id: number) {
     const event = await this.eventsAppService.findOne(id); // Busca el evento por su id
     // Retorna un mensaje con el evento encontrado
     return { message: 'Evento encontrado', event };
@@ -72,7 +82,7 @@ export class EventsAppController {
   @Put(':id')
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER) // Solo admin y organizer pueden actualizar
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipeCustom) id: number,
     @Body() dto: UpdateEventDTO,
   ) {
     return await this.eventsAppService.update(id, dto);
@@ -82,7 +92,7 @@ export class EventsAppController {
   // Metodo HTTP: DELETE /eventsapp/:id
   @Delete(':id')
   @Roles(UserRole.ADMIN) // Solo admin puede eliminar
-  async remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseIntPipeCustom) id: number) {
     return await this.eventsAppService.remove(id);
   }
 }

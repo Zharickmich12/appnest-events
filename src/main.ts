@@ -8,6 +8,10 @@ import { AppModule } from './app.module';
 // Pipe global para validar datos de entrada
 import { ValidationPipe } from '@nestjs/common';
 
+import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
+import { LoggingInterceptor } from 'src/common/interceptors/logging.interceptor';
+import { SanitizeResponseInterceptor } from 'src/common/interceptors/sanitize-response.interceptor';
+
 // Función principal que inicializa la aplicación.
 async function bootstrap() {
   // Crea una instancia de la aplicación a partir del módulo raíz.
@@ -21,6 +25,13 @@ async function bootstrap() {
     }),
   );
 
+  // Aplica el filtro global
+  app.useGlobalFilters(new HttpExceptionFilter());
+  // Aplica el interceptor global
+  app.useGlobalInterceptors(
+    new SanitizeResponseInterceptor(),
+    new LoggingInterceptor(),
+  );
   // Define el puerto del servidor (usa variable de entorno o el valor por defecto 3000).
   const port = process.env.PORT || 3000;
 

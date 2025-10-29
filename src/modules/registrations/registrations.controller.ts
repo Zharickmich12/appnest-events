@@ -11,11 +11,12 @@ import {
   Param,
   UseGuards,
   Request,
+  UseFilters,
+  UseInterceptors,
 } from '@nestjs/common';
 import { RegistrationsService } from './registrations.service';
 import { CreateRegistrationDTO } from 'src/dto/create-registration.dto';
 import { UpdateRegistrationDTO } from 'src/dto/update-registration.dto';
-import { ParseIntPipe } from '@nestjs/common';
 
 // Se importan los guards y decoradores para la proteccion de rutas
 import { JwtAuthGuard } from 'src/modules/auth/jwt.guard';
@@ -23,16 +24,22 @@ import { Roles } from 'src/modules/auth/roles.decorator';
 import { RolesGuard } from 'src/modules/auth/roles.guard';
 import { UserRole } from 'src/entities/user.entity';
 
-// Define el prefijo de las rutas que pertenecen a este controlador
+// Se importan el filtro e interceptor globales.
+import { ParseIntPipeCustom } from 'src/common/pipes/parse-int.pipe';
+import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
+import { SanitizeResponseInterceptor } from 'src/common/interceptors/sanitize-response.interceptor';
+
+@UseFilters(HttpExceptionFilter) // filtro global de excepciones
+@UseInterceptors(SanitizeResponseInterceptor) // Interceptor para formatear respuestas y eliminar datos sensibles
 @UseGuards(JwtAuthGuard, RolesGuard) // Protege todas las rutas del controlador
-@Controller('registrations')
+@Controller('registrations') // Define el prefijo de las rutas que pertenecen a este controlador
 export class RegistrationsController {
   // Inyeccion del servicio de registros para acceder a la logica de negocio.
   constructor(private readonly registrationsService: RegistrationsService) {}
 
   // Ruta para crear un nuevo registro (inscripcion de un usuario a un evento).
   // Metodo HTTP: POST /registrations
-
+  // retorna el user creado
   @Post()
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER) // Solo admin y organizer pueden usar esta ruta
   create(@Body() dto: CreateRegistrationDTO) {
@@ -41,10 +48,10 @@ export class RegistrationsController {
 
   // Ruta para obtener todos los registros existentes en la base de datos.
   // Metodo HTTP: GET /registrations
+  // Los ATTENDEE pueden ver sus propias inscripciones
   @Get()
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER, UserRole.ATTENDEE) // todos los roles tienen acceso
   findAll(@Request() req: { user: { userId: number; role: UserRole } }) {
-    // El decorador @Request permite acceder al usuario autenticado
     return this.registrationsService.findAll(req.user);
   }
 
@@ -52,7 +59,7 @@ export class RegistrationsController {
   // Metodo HTTP: GET /registrations/:id
   @Get(':id')
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER) // Solo admin y organizer pueden usar esta ruta
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseIntPipeCustom) id: number) {
     return this.registrationsService.findOne(id);
   }
 
@@ -62,7 +69,7 @@ export class RegistrationsController {
   @Put(':id')
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER) // Solo admin y organizer usar esta ruta
   update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipeCustom) id: number,
     @Body() dto: UpdateRegistrationDTO,
   ) {
     return this.registrationsService.update(id, dto);
@@ -71,9 +78,8 @@ export class RegistrationsController {
   // Ruta para eliminar un registro de inscripcion por su ID.
   // Metodo HTTP: DELETE /registrations/:id
   @Delete(':id')
-  @Roles(UserRole.ADMIN)
-  // Solo admin puede usar esta ruta
-  remove(@Param('id') id: number) {
+  @Roles(UserRole.ADMIN) // Solo admin puede usar esta ruta
+  remove(@Param('id', ParseIntPipeCustom) id: number) {
     return this.registrationsService.remove(id);
   }
 }

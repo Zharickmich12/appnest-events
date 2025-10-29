@@ -24,7 +24,7 @@ export class UsersService {
   ) {}
 
   // Crea un nuevo usuario en la base de datos.
-  async create(data: CreateUserDto): Promise<object> {
+  async create(data: CreateUserDto): Promise<User> {
     // Verificar si el email ya existe
     const existingUser = await this.userRepository.findOne({
       where: { email: data.email },
@@ -38,23 +38,11 @@ export class UsersService {
     }
 
     // Encriptar la contraseña antes de guardar el usuario.
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-    data.password = hashedPassword;
+    data.password = await bcrypt.hash(data.password, 10);
 
     // Crear y guardar el nuevo usuario.
     const newUser = this.userRepository.create(data);
-    await this.userRepository.save(newUser);
-
-    // Retornar un mensaje con los datos del usuario creado
-    return {
-      message: 'Usuario creado correctamente.',
-      user: {
-        id: newUser.id,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-      },
-    };
+    return await this.userRepository.save(newUser);
   }
 
   // Retorna la lista completa de usuarios registrados.
@@ -74,7 +62,7 @@ export class UsersService {
 
   // Actualiza los datos de un usuario existente.
   async update(id: number, data: UpdateUserDto): Promise<object> {
-    //Busca al usuario existente por id
+    // Busca al usuario existente por su ID
     const user = await this.findOne(id);
 
     // Si se quiere cambiar el correo, verificar que no exista otro igual
@@ -89,18 +77,24 @@ export class UsersService {
       }
     }
 
+    // Variable para saber si se actualizó la contraseña
+    let passwordUpdated = false;
+
     // Si se incluye una contraseña, se encripta
     if (data.password) {
       data.password = await bcrypt.hash(data.password, 10);
+      passwordUpdated = true;
     }
 
     // Actualizar los datos del usuario
     Object.assign(user, data);
     const updatedUser = await this.userRepository.save(user);
 
-    // Retornar mensaje de confirmación y datos actualizados.
+    // Retornar mensaje y datos visibles
     return {
-      message: 'Usuario actualizado correctamente',
+      message: passwordUpdated
+        ? 'Contraseña actualizada correctamente.'
+        : 'Usuario actualizado correctamente.',
       user: {
         id: updatedUser.id,
         name: updatedUser.name,
@@ -111,12 +105,10 @@ export class UsersService {
   }
 
   // Elimina un usuario de la base de datos
-  async remove(id: number): Promise<object> {
+  async remove(id: number): Promise<{ message: string }> {
     const user = await this.findOne(id);
     await this.userRepository.remove(user);
     // Retorna mensaje de confirmacion
-    return {
-      message: `Usuario con ID ${id} eliminado correctamente.`,
-    };
+    return { message: `Usuario con ID ${id} eliminado correctamente.` };
   }
 }

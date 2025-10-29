@@ -36,11 +36,6 @@ export class User {
   @Column({ default: 'attendee' })
   role: 'admin' | 'organizer' | 'attendee';
 
-  // Relación uno-a-muchos (OneToMany) con la entidad Event:
-  // Un usuario puede organizar múltiples eventos.
-  @OneToMany(() => Event, (event) => event.organizer)
-  events: Event[];
-
   // Relación uno-a-muchos (OneToMany) con EventRegistration:
   // Un usuario puede tener múltiples registros de inscripción a eventos.
   @OneToMany(() => EventRegistration, (registration) => registration.user)

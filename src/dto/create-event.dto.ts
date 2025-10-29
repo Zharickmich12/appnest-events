@@ -6,6 +6,7 @@ import {
   IsPositive,
   IsString,
   Length,
+  IsEmail,
 } from 'class-validator';
 
 /**
@@ -45,4 +46,9 @@ export class CreateEventDTO {
   @IsInt({ message: 'La capacidad debe ser un número entero' })
   @IsPositive({ message: 'La capacidad debe ser un número positivo' })
   capacity?: number;
+
+  // Correo electronico asociado al evento osea la persona responsable (obligatorio)
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 }
