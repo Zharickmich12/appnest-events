@@ -1,98 +1,226 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Gestión de eventos Backend API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Descripción general
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+**Event Management Backend API** es un proyecto desarrollado con **NestJS** y **TypeORM**, diseñado para gestionar de forma centralizada los usuarios, eventos e inscripciones dentro de un sistema modular.
 
-## Description
+Su objetivo es proporcionar una **API RESTful escalable, mantenible y segura**, implementando buenas prácticas de arquitectura, manejo de datos relacionales en **MySQL** y autenticación **JWT**.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Propósito del proyecto
 
-## Project setup
+El propósito del sistema es permitir la administración de eventos mediante:
 
-```bash
-$ npm install
-```
+- Gestión de usuarios con diferentes roles.
+- Creación de eventos por parte de organizadores.
+- Registro de participación por parte de los asistentes.
 
-## Compile and run the project
+El sistema busca **optimizar procesos manuales**, garantizando **consistencia, trazabilidad y seguridad**.
 
-```bash
-# development
-$ npm run start
+## Problema que resuelve
 
-# watch mode
-$ npm run start:dev
+En entornos donde se organizan múltiples eventos, la gestión de usuarios, inscripciones y control de acceso suele dispersarse entre planillas o sistemas poco integrados.
 
-# production mode
-$ npm run start:prod
-```
+Este proyecto aborda ese problema mediante un backend estructurado que permite:
 
-## Run tests
+- Gestionar usuarios y roles desde un único punto.
+- Registrar y administrar eventos de manera controlada.
+- Manejar inscripciones de usuarios a eventos con relaciones directas.
+- Validar datos y restringir acciones mediante autenticación JWT y roles.
+- Garantizar integridad referencial en la base de datos MySQL.
+
+## Arquitectura del sistema
+
+El proyecto adopta una **arquitectura modular** de NestJS, separando responsabilidades por dominio funcional.
+
+Cada módulo — `auth`, `users`, `eventsapp`, `registrations` — contiene:
+
+- Su propio **controlador**, **servicio** y **DTOs**.
+- Lógica encapsulada para facilitar el mantenimiento y la escalabilidad.
+
+Además:
+
+- Las **entidades TypeORM** definen las tablas y relaciones en la base de datos.
+- Las **migraciones** gestionan los cambios estructurales del esquema de forma controlada y versionada.
 
 ```bash
-# unit tests
-$ npm run test
+└── src/                              # Código fuente del proyecto
+    ├── common/                       # Utilidades globales y componentes transversales
+    │   ├── filters/                  # Filtros globales para manejo de excepciones
+    │   │   └── http-exception.filter.ts
+    │   ├── interceptors/             # Interceptores (logging, sanitización, etc.)
+    │   │   ├── logging.interceptor.ts
+    │   │   └── sanitize-response.interceptor.ts
+    │   └── pipes/                    # Pipes personalizados para validaciones y transformaciones
+    │       └── parse-int.pipe.ts
+    │
+    ├── dto/                          # Data Transfer Objects (validaciones y estructura de datos)
+    │   ├── create-event.dto.ts
+    │   ├── create-registration.dto.ts
+    │   ├── create-user.dto.ts
+    │   ├── login-user.dto.ts
+    │   ├── update-event.dto.ts
+    │   ├── update-registration.dto.ts
+    │   └── update-user.dto.ts
+    │
+    ├── entities/                     # Entidades TypeORM (mapeo de tablas MySQL)
+    │   ├── user.entity.ts
+    │   ├── event.entity.ts
+    │   └── event-registration.entity.ts
+    │
+    ├── migrations/                   # Migraciones SQL generadas por TypeORM
+    │   └── 1761663620551-Update.ts
+    │
+    ├── modules/                      # Módulos principales de la aplicación (arquitectura modular)
+    │   ├── auth/                     # Autenticación (JWT, login, registro, guards)
+    │   │   ├── auth.module.ts
+    │   │   ├── auth.controller.ts
+    │   │   ├── auth.service.ts
+    │   │   ├── jwt.strategy.ts
+    │   │   ├── jwt.guard.ts
+    │   │   ├── roles.decorator.ts
+    │   │   └── roles.guard.ts
+    │   │
+    │   ├── users/                    # Gestión de usuarios
+    │   │   ├── users.module.ts
+    │   │   ├── users.controller.ts
+    │   │   └── users.service.ts
+    │   │
+    │   ├── eventsapp/                # Módulo de eventos
+    │   │   ├── eventsapp.module.ts
+    │   │   ├── eventsapp.controller.ts
+    │   │   └── eventsapp.service.ts
+    │   │
+    │   └── registrations/            # Módulo de inscripciones a eventos
+    │       ├── registrations.module.ts
+    │       ├── registrations.controller.ts
+    │       └── registrations.service.ts
+    │
+    ├── main.ts                       # Punto de entrada del servidor NestJS
+    └── app.module.ts                 # Módulo raíz de la aplicación
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+├── .env.template                     # Plantilla de variables de entorno
+├── README.md                         # Documentación del proyecto
+├── package.json                      # Dependencias y scripts de ejecución
+├── tsconfig.json                     # Configuración de TypeScript
+└── typeorm.config.ts                 # Configuración principal de TypeORM
 ```
 
-## Deployment
+## Cómo Ejecutar el Proyecto
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Instalar dependencias
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm install
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Configurar variables de entorno (.env)
 
-## Resources
+```bash
+cp .env.template .env
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+Luego editar el archivo con tus credenciales (DB_USER, DB_PASS, JWT_SECRET, etc.)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Ejecutar migraciones de la base de datos
 
-## Support
+```bash
+npm run typeorm:migration:run
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Iniciar el servidor en modo desarrollo
 
-## Stay in touch
+```bash
+npm run start:dev
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+El backend estará disponible por defecto en:
+http://localhost:3000
 
-## License
+## Componentes principales
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### `app.module.ts`
+
+- Módulo raíz que conecta todos los módulos del sistema.
+- Configura la conexión a la base de datos con `TypeOrmModule.forRootAsync`.
+- Carga las variables de entorno mediante `ConfigModule`.
+- Importa los módulos funcionales:
+  - `AuthModule`
+  - `UsersModule`
+  - `EventsAppModule`
+  - `RegistrationsModule`
+
+### `typeorm.config.ts`
+
+- Define la configuración central de TypeORM.
+- Usa las variables del archivo `.env` para conectarse a MySQL.
+
+### `.env.template`
+
+- Plantilla que define las variables necesarias para la ejecución.
+- Facilita el despliegue en entornos locales.
+
+## Entidades y relaciones
+
+| Entidad             | Descripción                                                                                                  | Relaciones                  |
+| ------------------- | ------------------------------------------------------------------------------------------------------------ | --------------------------- |
+| `User`              | Representa los usuarios del sistema. Tiene atributos como nombre, correo, contraseña y rol.                  | 1:N con `EventRegistration` |
+| `Event`             | Representa un evento creado por un organizador o administrador. Contiene nombre, fecha, descripción y aforo. | 1:N con `EventRegistration` |
+| `EventRegistration` | Tabla intermedia que relaciona `User` y `Event`. Guarda la fecha de inscripción y estado.                    | N:1 hacia `User` y `Event`  |
+
+### Relaciones conceptuales
+
+- Un **usuario** puede inscribirse en **muchos eventos**.
+- Un **evento** puede tener **muchos usuarios inscritos**.
+- `EventRegistration` actúa como tabla puente (**many-to-many** resuelta en dos relaciones **many-to-one**).
+
+## Migraciones
+
+Las migraciones reflejan los cambios en las entidades dentro de la base de datos MySQL. Se ejecutan con los comandos:
+
+```bash
+npm run typeorm migration:generate -- -n NombreMigracion
+npm run typeorm migration:run
+```
+
+La migración dentro de /src/migrations contiene un método up (creación de tablas o columnas) y down (reversión).
+
+## Autenticación y control de roles y módulos funcionales
+
+La autenticación está implementada con JWT (JSON Web Token). Se genera un token al iniciar sesión que debe enviarse en el header `Authorization: Bearer <token>`. Los roles (`ADMIN`, `ORGANIZER`, `ATTENDEE`) determinan qué endpoints puede acceder un usuario. Los guards (`JwtAuthGuard` y `RolesGuard`) protegen rutas, y el decorador `@Roles()` define permisos a nivel de controlador o método.
+
+El sistema se organiza en módulos funcionales:
+
+**UsersModule**: Permite CRUD completo de usuarios. Los roles se asignan al crear un usuario. El rol `ADMIN` puede listar y eliminar usuarios. Usa `UserService` para acceder al repositorio y `UserController` para exponer endpoints.
+
+**EventsAppModule**: CRUD de eventos. Los roles `ORGANIZER` y `ADMIN` pueden crear, editar o eliminar eventos. Todos los usuarios autenticados pueden listar eventos disponibles.
+
+**RegistrationsModule**: Relaciona usuarios y eventos. Permite a los usuarios inscribirse, consultar y cancelar sus inscripciones. El rol `ADMIN` puede ver todas las inscripciones.
+
+## Endpoints principales
+
+| Método | Ruta             | Descripción                                        |
+| ------ | ---------------- | -------------------------------------------------- |
+| POST   | `/auth/login`    | Inicia sesión con credenciales y retorna token JWT |
+| POST   | `/auth/register` | Registra un nuevo usuario                          |
+| GET    | `/users`         | Lista todos los usuarios (solo admin)              |
+| POST   | `/eventsapp`     | Crea un nuevo evento                               |
+| GET    | `/eventsapp`     | Lista todos los eventos                            |
+| POST   | `/registrations` | Crea una inscripción de usuario a evento           |
+| GET    | `/registrations` | Muestra las inscripciones existentes               |
+
+## Tecnologías utilizadas
+
+- **NestJS** — Framework modular para Node.js que facilita la construcción de aplicaciones escalables y mantenibles.
+- **TypeORM** — ORM que permite el modelado de entidades, relaciones y gestión de migraciones.
+- **MySQL** — Base de datos relacional utilizada para persistencia de datos.
+- **JWT (JSON Web Token)** — Sistema de autenticación segura basado en tokens.
+- **Class Validator / Class Transformer** — Librerías para validación y transformación de DTOs en las capas de entrada.
+
+## Equipo de Desarrollo
+
+| Rol                    | Integrante           |
+| ---------------------- | -------------------- |
+| Líder / Desarrolladora | Zharick Fetecua      |
+| Desarrolladora         | Luisa Maria Bastidas |
+| Desarrolladora         | Eileen Mendoza       |
+| Desarrolladora         | Elena Henao          |
