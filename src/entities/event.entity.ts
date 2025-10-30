@@ -3,40 +3,75 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { EventRegistration } from './event-registration.entity';
 
-// Decorador @Entity():
-// Indica que esta clase corresponde a una tabla en la base de datos llamada "event".
+/**
+ * @class Event
+ * @description Entidad principal de la base de datos que representa un evento.
+ */
 @Entity()
 export class Event {
-  // Columna primaria autogenerada que identifica de forma única cada evento.
+  /**
+   * @property {number} id
+   * @description Clave primaria única para la entidad Event.
+   * @typeorm @PrimaryGeneratedColumn - Generación automática de valores enteros.
+   */
   @PrimaryGeneratedColumn()
   id: number;
 
-  // Columna que almacena el título del evento (obligatorio).
+  /**
+   * @property {string} title
+   * @description Título descriptivo y obligatorio del evento.
+   * @typeorm @Column - Mapea a una columna VARCHAR/TEXT/STRING no nula.
+   */
   @Column()
   title: string;
 
-  // Columna de tipo texto que almacena la descripción completa del evento.
+  /**
+   * @property {string} description
+   * @description Descripción completa y detallada del evento.
+   * @typeorm @Column('text') - Mapea a una columna de tipo TEXT para cadenas de gran longitud.
+   */
   @Column('text')
   description: string;
 
-  // Columna que almacena la fecha y hora del evento.
+  /**
+   * @property {Date} date
+   * @description Fecha y hora programada para el evento.
+   * @typeorm @Column - Mapea a una columna de tipo DATE/DATETIME/TIMESTAMP.
+   */
   @Column()
   date: Date;
 
-  // Columna que almacena la ubicación del evento.
+  /**
+   * @property {string} location
+   * @description Ubicación física o virtual donde se llevará a cabo el evento.
+   * @typeorm @Column
+   */
   @Column()
   location: string;
 
-  // Columna que define la capacidad máxima de asistentes del evento (valor por defecto 100).
+  /**
+   * @property {number} capacity
+   * @description Capacidad máxima de asistentes permitidos para el evento.
+   * @typeorm @Column({ default: 100 }) - Valor por defecto: 100.
+   */
   @Column({ default: 100 })
   capacity: number;
 
-  // Correo electronico asociado al evento osea la persona responsable
+  /**
+   * @property {string} email
+   * @description Correo electrónico del organizador o persona responsable del evento.
+   * @typeorm @Column - Mapea a una columna de cadena.
+   */
   @Column()
   email: string;
 
-  // Relación uno-a-muchos (OneToMany) con EventRegistration:
-  // Un evento puede tener múltiples registros de usuarios inscritos.
+  /**
+   * @property {EventRegistration[]} registrations
+   * @description Colección de registros de inscripción asociados a este evento.
+   * @typeorm @OneToMany - Define una relación uno-a-muchos: Un Evento tiene muchos Registros.
+   * @param {() => EventRegistration} targetEntity - Entidad relacionada.
+   * @param {(registration) => registration.event} inverseSide - Mapeo inverso a la propiedad 'event' en la entidad EventRegistration.
+   */
   @OneToMany(() => EventRegistration, (registration) => registration.event)
   registrations: EventRegistration[];
 }

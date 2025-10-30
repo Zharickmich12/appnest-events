@@ -1,7 +1,6 @@
 // Entidad que representa un usuario dentro del sistema.
 // Contiene la información de acceso, perfil y las relaciones con eventos y registros de inscripción.
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Event } from './event.entity';
 import { EventRegistration } from './event-registration.entity';
 
 // Roles posibles de un usuario
