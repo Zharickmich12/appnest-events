@@ -1,8 +1,10 @@
 import { IsInt, IsNotEmpty, IsPositive } from 'class-validator';
 
 /**
- * DTO para crear un nuevo registro de inscripción a un evento.
- * Valida que se proporcionen correctamente los IDs del usuario y del evento.
+ * @class CreateRegistrationDTO
+ * @description Data Transfer Object (DTO) utilizado para validar y transportar los
+ * identificadores (Foreign Keys) requeridos para la creación de un nuevo registro de inscripción
+ * entre un usuario y un evento. Ambos campos son obligatorios.
  */
 export class CreateRegistrationDTO {
   // ID del usuario que se inscribe al evento (obligatorio, entero y positivo).

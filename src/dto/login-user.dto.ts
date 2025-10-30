@@ -1,8 +1,10 @@
 import { IsEmail, IsNotEmpty, Length } from 'class-validator';
 
 /**
- * DTO utilizado para validar los datos al iniciar sesión.
- * Asegura que se envíen un correo válido y una contraseña con longitud correcta.
+ * @class LoginUserDTO
+ * @description Data Transfer Object (DTO) utilizado exclusivamente para validar los datos
+ * requeridos en el proceso de inicio de sesión (Login/Autenticación). 
+ * Todos los campos son obligatorios y tienen restricciones estrictas de formato.
  */
 export class LoginUserDTO {
   // Correo electrónico del usuario (obligatorio y debe tener formato válido).

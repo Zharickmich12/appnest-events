@@ -10,8 +10,10 @@ import {
 } from 'class-validator';
 
 /**
- * DTO para crear un nuevo evento.
- * Define y valida los datos requeridos para registrar un evento dentro del sistema.
+ * @class CreateEventDTO
+ * @description Data Transfer Object (DTO) utilizado para validar y transportar los datos
+ * esenciales requeridos para la creación de una nueva entidad Event.
+ * La mayoría de los campos son obligatorios para el registro inicial del evento.
  */
 export class CreateEventDTO {
   // Título del evento (obligatorio, entre 3 y 100 caracteres).

@@ -1,8 +1,10 @@
 import { IsEmail, IsIn, IsNotEmpty, Length, IsOptional } from 'class-validator';
 
 /**
- * DTO para crear un nuevo usuario.
- * Define y valida los datos requeridos para registrar un usuario en el sistema.
+ * @class CreateUserDto
+ * @description Data Transfer Object (DTO) utilizado para validar y transportar los datos
+ * necesarios para la creación inicial de una nueva entidad User (registro).
+ * Establece requisitos estrictos para los campos obligatorios.
  */
 export class CreateUserDto {
   // Nombre completo del usuario (obligatorio).
