@@ -196,17 +196,51 @@ El sistema se organiza en módulos funcionales:
 
 **RegistrationsModule**: Relaciona usuarios y eventos. Permite a los usuarios inscribirse, consultar y cancelar sus inscripciones. El rol `ADMIN` puede ver todas las inscripciones.
 
-## Endpoints principales
+## Endpoints Principales y CRUD
 
-| Método | Ruta             | Descripción                                        |
-| ------ | ---------------- | -------------------------------------------------- |
-| POST   | `/auth/login`    | Inicia sesión con credenciales y retorna token JWT |
-| POST   | `/auth/register` | Registra un nuevo usuario                          |
-| GET    | `/users`         | Lista todos los usuarios (solo admin)              |
-| POST   | `/eventsapp`     | Crea un nuevo evento                               |
-| GET    | `/eventsapp`     | Lista todos los eventos                            |
-| POST   | `/registrations` | Crea una inscripción de usuario a evento           |
-| GET    | `/registrations` | Muestra las inscripciones existentes               |
+### Auth (Autenticación)
+
+| Método | Ruta             | Descripción                                                    |
+| ------ | ---------------- | -------------------------------------------------------------- |
+| POST   | `/auth/register` | Registra un nuevo usuario                                      |
+| POST   | `/auth/login`    | Inicia sesión con credenciales y retorna un token JWT          |
+| GET    | `/auth/profile`  | Devuelve la información del usuario autenticado (requiere JWT) |
+
+---
+
+### Users (Usuarios)
+
+| Método | Ruta         | Descripción                                     |
+| ------ | ------------ | ----------------------------------------------- |
+| GET    | `/users`     | Lista todos los usuarios (solo admin)           |
+| GET    | `/users/:id` | Obtiene la información de un usuario específico |
+| POST   | `/users`     | Crea un nuevo usuario (solo admin)              |
+| PUT    | `/users/:id` | Actualiza los datos de un usuario               |
+| DELETE | `/users/:id` | Elimina un usuario del sistema (solo admin)     |
+
+---
+
+### EventsApp (Eventos)
+
+| Método | Ruta             | Descripción                                   |
+| ------ | ---------------- | --------------------------------------------- |
+| GET    | `/eventsapp`     | Lista todos los eventos                       |
+| GET    | `/eventsapp/:id` | Obtiene los detalles de un evento específico  |
+| POST   | `/eventsapp`     | Crea un nuevo evento (solo admin y organizer) |
+| PUT    | `/eventsapp/:id` | Actualiza la información de un evento         |
+| DELETE | `/eventsapp/:id` | Elimina un evento (solo admin)                |
+
+---
+
+### Registrations (Inscripciones a eventos)
+
+| Método | Ruta                 | Descripción                                                                |
+| ------ | -------------------- | -------------------------------------------------------------------------- |
+| GET    | `/registrations`     | Lista todas las inscripciones existentes (los ATTENDEE solo ven las suyas) |
+| GET    | `/registrations/:id` | Muestra el detalle de una inscripción específica                           |
+| POST   | `/registrations`     | Crea una inscripción de un usuario a un evento                             |
+| PUT    | `/registrations/:id` | Actualiza una inscripción (cambia usuario o evento)                        |
+| DELETE | `/registrations/:id` | Elimina una inscripción (solo admin)                                       |
 
 ## Tecnologías utilizadas
 
