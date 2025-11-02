@@ -14,14 +14,14 @@ import { Injectable } from '@nestjs/common';
 
 /**
  * Servicio principal de la aplicación
- * 
+ *
  * @class AppService
  * @decorator @Injectable
- * 
+ *
  * @description
  * Servicio de ejemplo que demuestra la estructura básica de un servicio en NestJS.
  * Contiene lógica de negocio que puede ser inyectada en controladores u otros servicios.
- * 
+ *
  * @example
  * Inyección en un controlador
  * constructor(private readonly appService: AppService) {}
@@ -30,10 +30,10 @@ import { Injectable } from '@nestjs/common';
 export class AppService {
   /**
    * Retorna un mensaje de saludo básico
-   * 
+   *
    * @method getHello
    * @returns {string} Mensaje de bienvenida "Hello World!"
-   * 
+   *
    * @description
    * Método de ejemplo que demuestra un servicio simple sin dependencias.
    * En aplicaciones reales, los métodos de servicio típicamente:

@@ -19,11 +19,11 @@ import { AuthGuard } from '@nestjs/passport';
 
 /**
  * Guard de autenticación basado en JWT
- * 
+ *
  * @class JwtAuthGuard
  * @extends {AuthGuard('jwt')}
  * @decorator @Injectable
- * 
+ *
  * @description
  * Guard que implementa autenticación mediante JSON Web Tokens (JWT).
  * Extiende AuthGuard de Passport.js y utiliza la estrategia 'jwt' configurada
@@ -33,5 +33,5 @@ import { AuthGuard } from '@nestjs/passport';
  * - Verificación de expiración automática
  * - Tokens no pueden ser modificados sin invalidar firma
  */
- @Injectable()
+@Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {}

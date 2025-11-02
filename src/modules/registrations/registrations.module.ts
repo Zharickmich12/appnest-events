@@ -34,13 +34,13 @@ import { EventRegistration } from 'src/entities/event-registration.entity';
 
 /**
  * Módulo de inscripciones a eventos
- * 
+ *
  * @class RegistrationsModule
  * @decorator @Module
- * 
+ *
  * @description
  * Módulo que gestiona la relación many-to-many entre usuarios y eventos.
- * 
+ *
  */
 @Module({
   /**
@@ -71,9 +71,9 @@ import { EventRegistration } from 'src/entities/event-registration.entity';
   ],
   /**
    * Controladores registrados en el módulo
-   * 
+   *
    * @property {RegistrationsController} RegistrationsController
-   * 
+   *
    * @description
    * Maneja rutas /registrations con endpoints:
    * Todas las rutas protegidas con JwtAuthGuard y RolesGuard
@@ -81,18 +81,18 @@ import { EventRegistration } from 'src/entities/event-registration.entity';
   controllers: [RegistrationsController],
   /**
    * Servicios disponibles en el módulo
-   * 
+   *
    * @property {RegistrationsService} RegistrationsService
-   * 
+   *
    * @description
    * Implementa la lógica de negocio de inscripciones:
-   * 
+   *
    * - create(): Crea inscripción validando usuario y evento
    * - findAll(): Lista inscripciones con filtrado por rol
    * - findOne(): Busca inscripción por ID con relaciones
    * - update(): Actualiza usuario o evento de una inscripción
    * - remove(): Elimina inscripción permanentemente
-   * 
+   *
    * Características especiales:
    * - Validación de integridad referencial
    * - Filtrado automático para ATTENDEE (solo sus inscripciones)

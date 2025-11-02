@@ -10,7 +10,11 @@
  * Injectable: Marca la clase como proveedor inyectable
  * NotFoundException: Excepción HTTP 404 para recursos no encontrados
  */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 /**
  * InjectRepository: Decorador para inyectar repositorios de TypeORM
  */
@@ -31,10 +35,10 @@ import { UpdateEventDTO } from 'src/dto/update-event.dto';
 
 /**
  * Servicio de gestión de eventos
- * 
+ *
  * @class EventsAppService
  * @decorator @Injectable
- * 
+ *
  * @description
  * Proporciona métodos para administrar eventos del sistema
  */
@@ -42,10 +46,10 @@ import { UpdateEventDTO } from 'src/dto/update-event.dto';
 export class EventsAppService {
   /**
    * Constructor del servicio
-   * 
+   *
    * @constructor
    * @param {Repository<Event>} eventRepository - Repositorio de TypeORM para Event
-   * 
+   *
    * @description
    * Inyecta el repositorio de Event para realizar operaciones de base de datos.
    * TypeORM proporciona métodos predefinidos (find, findOne, save, update, delete, count)
@@ -57,10 +61,10 @@ export class EventsAppService {
 
   /**
    * Obtiene todos los eventos registrados en el sistema
-   * 
+   *
    * @method findAll
    * @returns {Promise<Event[]>} Array con todos los eventos
-   * 
+   *
    * @description
    * Retorna la lista completa de eventos
    */
@@ -75,17 +79,17 @@ export class EventsAppService {
 
   /**
    * Busca un evento específico por su ID
-   * 
+   *
    * @async
    * @method findOne
    * @param {number} id - ID del evento a buscar
    * @returns {Promise<Event>} Evento encontrado
    * @throws {NotFoundException} Si el evento no existe
-   * 
+   *
    * @description
    * Método utilizado internamente por update() y remove().
    * Lanza excepción si no se encuentra el evento para evitar operaciones inválidas.
-   * 
+   *
    * @security
    * El controlador debe validar
    * que el usuario tenga permisos para acceder al evento.
@@ -107,50 +111,76 @@ export class EventsAppService {
 
   /**
    * Crea un nuevo evento en la base de datos
-   * 
+   *
    * @async
    * @method create
    * @param {CreateEventDTO} data - Datos del nuevo evento (validados por DTO)
    * @returns {Promise<Event>} Evento creado con ID generado
-   * 
+   *
    * @description
    * Proceso de creación:
    * 1. Valida datos mediante CreateEventDTO (validadores class-validator)
-   * 2. Crea instancia de la entidad Event
-   * 3. Persiste en base de datos
-   * 4. Retorna evento creado con ID auto-generado
+   * 2. Verifica que NO exista otro evento con el mismo título
+   *    (títulos duplicados no están permitidos)
+   * 3. Crea instancia de la entidad Event
+   * 4. Persiste en base de datos
+   * 5. Retorna evento creado con ID auto-generado
+   *
+   * @throws {BadRequestException} Si ya existe un evento con el mismo título
+   *
+   * @security
+   * - evita duplicados y protege integridad lógica de la tabla de eventos
    */
   async create(data: CreateEventDTO) {
     /**
-     * create() crea una instancia de Event a partir del DTO
-     * No persiste en BD, solo crea el objeto en memoria
-     * Aplica transformaciones y valores por defecto definidos en la entidad
+     * Verifica si ya existe un evento con el mismo título
+     * findOne() busca registros por criterio específico
+     * Equivalente a: SELECT * FROM event WHERE title = ?
+     */
+    const existing = await this.eventRepository.findOne({
+      where: { title: data.title },
+    });
+
+    /**
+     * Si existe, se lanza excepción HTTP 400
+     * Evita conflictos y duplicidad de nombres de eventos
+     */
+    if (existing) {
+      throw new BadRequestException(
+        `Ya existe un evento con el título "${data.title}". No se permiten títulos duplicados.`,
+      );
+    }
+
+    /**
+     * create() crea instancia del Event
+     * no persiste en BD aún, solo crea estructura en memoria
      */
     const newEvent = this.eventRepository.create(data);
+
     /**
-     * save() persiste el evento en la base de datos
-     * Ejecuta INSERT y retorna la entidad con ID generado y timestamps
+     * save() persiste el registro en la base de datos
+     * ejecuta INSERT y retorna la entidad con el ID generado
      */
     return await this.eventRepository.save(newEvent);
   }
 
   /**
    * Actualiza los datos de un evento existente
-   * 
+   *
    * @async
    * @method update
    * @param {number} id - ID del evento a actualizar
    * @param {UpdateEventDTO} data - Datos a actualizar (parciales)
    * @returns {Promise<object>} Objeto con mensaje y evento actualizado
    * @throws {NotFoundException} Si el evento no existe
-   * 
+   *
    * @description
    * Proceso de actualización:
    * 1. Verifica que el evento existe (findOne lanza NotFoundException si no existe)
    * 2. Ejecuta actualización en base de datos
    * 3. Recupera el evento actualizado
    * 4. Retorna mensaje con título del evento y datos actualizados
-   * 
+   *
    * @validation
    * UpdateEventDTO permite actualización parcial:
    * - Todos los campos son opcionales
@@ -167,7 +197,7 @@ export class EventsAppService {
     /**
      * update() ejecuta UPDATE en la base de datos
      * Equivalente a: UPDATE event SET ... WHERE id = ?
-     * 
+     *
      * Solo actualiza los campos presentes en data (actualización parcial)
      * No retorna la entidad actualizada, solo el resultado de la operación
      */
@@ -189,13 +219,13 @@ export class EventsAppService {
 
   /**
    * Elimina un evento de la base de datos
-   * 
+   *
    * @async
    * @method remove
    * @param {number} id - ID del evento a eliminar
    * @returns {Promise<{message: string}>} Mensaje de confirmación
    * @throws {NotFoundException} Si el evento no existe
-   * 
+   *
    * @description
    * Eliminación física del registro (DELETE permanente).
    * Retorna mensaje con ID y título del evento eliminado.
@@ -210,7 +240,7 @@ export class EventsAppService {
     /**
      * delete() elimina físicamente el registro de la base de datos
      * Equivalente a: DELETE FROM event WHERE id = ?
-    */
+     */
     await this.eventRepository.delete(id);
     /**
      * Retorna mensaje de confirmación con ID y título del evento eliminado
@@ -223,11 +253,11 @@ export class EventsAppService {
 
   /**
    * Obtiene el número total de eventos en la base de datos
-   * 
+   *
    * @async
    * @method getEventsCount
    * @returns {Promise<number>} Cantidad total de eventos
-   * 
+   *
    * @description
    * Retorna el conteo total de eventos registrados en el sistema.
    */

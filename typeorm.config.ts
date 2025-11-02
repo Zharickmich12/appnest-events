@@ -33,10 +33,10 @@ dotenv.config();
 
 /**
  * Instancia de DataSource configurada para MySQL
- * 
+ *
  * @constant
  * @type {DataSource}
- * 
+ *
  * @property {string} type - Tipo de base de datos (MySQL)
  * @property {string} host - Hostname del servidor MySQL (desde DB_HOST)
  * @property {number} port - Puerto de conexión MySQL (desde DB_PORT, default: 3306)
@@ -45,7 +45,7 @@ dotenv.config();
  * @property {string} database - Nombre de la base de datos (desde DB_NAME)
  * @property {Array<Function>} entities - Entidades TypeORM a gestionar
  * @property {Array<string>} migrations - Patrón glob para archivos de migración
- * 
+ *
  * @example
  *  Variables de entorno requeridas en .env:
  * DB_HOST=localhost
@@ -68,7 +68,7 @@ export default new DataSource({
    * Array de clases de entidad que TypeORM sincronizará con las tablas de BD
    * Cada entidad representa una tabla y define su estructura mediante decoradores
    */
-  entities: [User, Event, EventRegistration], 
+  entities: [User, Event, EventRegistration],
   /**
    * Patrón de archivos de migración para versionamiento de esquema de BD
    * Las migraciones permiten aplicar cambios estructurales de forma controlada

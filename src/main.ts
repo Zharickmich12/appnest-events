@@ -33,11 +33,11 @@ import { SanitizeResponseInterceptor } from 'src/common/interceptors/sanitize-re
 
 /**
  * Función bootstrap asíncrona que inicializa y configura la aplicación NestJS
- * 
+ *
  * @async
  * @function bootstrap
  * @returns {Promise<void>}
- * 
+ *
  * @description
  * Realiza las siguientes operaciones en orden:
  * 1. Crea la instancia de la aplicación NestJS
@@ -47,7 +47,7 @@ import { SanitizeResponseInterceptor } from 'src/common/interceptors/sanitize-re
  * 5. Determina el puerto de escucha
  * 6. Inicia el servidor HTTP
  * 7. Muestra mensaje de confirmación en consola
- * 
+ *
  * @throws {Error} Si falla la creación de la aplicación o el inicio del servidor
  */
 async function bootstrap() {
@@ -59,7 +59,7 @@ async function bootstrap() {
   /**
    * Configura ValidationPipe global para validación automática de DTOs
    * en todos los endpoints de la aplicación
-   * 
+   *
    * @param {ValidationPipe} pipe - Instancia configurada del pipe de validación
    * @param {Object} config - Configuración del ValidationPipe
    * @param {boolean} config.whitelist - Elimina propiedades no definidas en DTOs
@@ -73,13 +73,13 @@ async function bootstrap() {
        * Elimina automáticamente propiedades que no están definidas en el DTO
        * Protege contra inyección de propiedades no deseadas
        */
-      whitelist: true, 
+      whitelist: true,
       /**
        * forbidNonWhitelisted: true
        * Lanza BadRequestException si se reciben propiedades no whitelisteadas
        * Proporciona feedback explícito al cliente sobre campos inválidos
        */
-      forbidNonWhitelisted: true, 
+      forbidNonWhitelisted: true,
       /**
        * transform: true
        * Convierte payloads planos a instancias tipadas del DTO correspondiente
@@ -98,7 +98,7 @@ async function bootstrap() {
   /**
    * Aplica interceptores globales en orden de ejecución
    * Los interceptores se ejecutan en el orden definido aquí
-   * 
+   *
    * 1. SanitizeResponseInterceptor: Limpia/sanitiza datos sensibles en respuestas
    * 2. LoggingInterceptor: Registra información de requests/responses para debugging
    */

@@ -38,10 +38,10 @@ import { UserRole } from 'src/entities/user.entity';
 
 /**
  * Servicio de gestión de inscripciones a eventos
- * 
+ *
  * @class RegistrationsService
  * @decorator @Injectable
- * 
+ *
  * @description
  * Maneja la relación many-to-many entre usuarios y eventos mediante
  * la entidad EventRegistration. Proporciona funcionalidades para:
@@ -49,7 +49,7 @@ import { UserRole } from 'src/entities/user.entity';
  * - Consultar inscripciones (con filtrado por rol)
  * - Actualizar inscripciones existentes
  * - Cancelar inscripciones
- * 
+ *
  * Características especiales:
  * - Los usuarios ATTENDEE solo ven sus propias inscripciones
  * - ADMIN y ORGANIZER pueden ver todas las inscripciones
@@ -59,18 +59,18 @@ import { UserRole } from 'src/entities/user.entity';
 export class RegistrationsService {
   /**
    * Constructor del servicio
-   * 
+   *
    * @constructor
    * @param {Repository<EventRegistration>} registrationRepo - Repositorio de inscripciones
    * @param {Repository<User>} userRepo - Repositorio de usuarios
    * @param {Repository<Event>} eventRepo - Repositorio de eventos
-   * 
+   *
    * @description
    * Inyecta tres repositorios para gestionar:
    * 1. EventRegistration: Tabla principal de inscripciones (relación)
    * 2. User: Para validar existencia de usuarios
    * 3. Event: Para validar existencia de eventos
-   * 
+   *
    * Esta arquitectura permite validar integridad referencial antes de
    * crear o actualizar inscripciones.
    */
@@ -85,20 +85,20 @@ export class RegistrationsService {
 
   /**
    * Crea una nueva inscripción de usuario a evento
-   * 
+   *
    * @async
    * @method create
    * @param {CreateRegistrationDTO} dto - Datos de la inscripción (userId, eventId)
    * @returns {Promise<EventRegistration>} Inscripción creada con relaciones cargadas
    * @throws {NotFoundException} Si el usuario o evento no existen
-   * 
+   *
    * @description
    * Proceso de creación:
    * 1. Valida que el usuario existe en la base de datos
    * 2. Valida que el evento existe en la base de datos
    * 3. Crea la relación entre usuario y evento
    * 4. Persiste la inscripción
-   * 
+   *
    * @security
    * - Previene inscripciones con IDs inexistentes
    * - Validación previa evita errores de integridad referencial
@@ -145,29 +145,29 @@ export class RegistrationsService {
 
   /**
    * Obtiene inscripciones según el rol del usuario autenticado
-   * 
+   *
    * @async
    * @method findAll
    * @param {Object} user - Datos del usuario autenticado
    * @param {number} user.userId - ID del usuario autenticado
    * @param {UserRole} user.role - Rol del usuario (ADMIN, ORGANIZER, ATTENDEE)
    * @returns {Promise<EventRegistration[]>} Lista de inscripciones
-   * 
+   *
    * @description
    * Implementa lógica de filtrado basada en roles:
-   * 
+   *
    * **ATTENDEE**: Solo ve sus propias inscripciones
    * - Filtra por user.id = userId autenticado
    * - Útil para que usuarios normales vean sus eventos
-   * 
+   *
    * **ADMIN/ORGANIZER**: Ven todas las inscripciones del sistema
    * - Sin filtros, acceso completo
    * - Útil para gestión y reportes
-   * 
+   *
    * Características comunes:
    * - Carga relaciones 'user' y 'event' (eager loading)
    * - Ordenamiento por ID ascendente para consistencia
-   * 
+   *
    * @security
    * - Aislamiento de datos por rol
    * - ATTENDEE no puede ver inscripciones de otros usuarios
@@ -204,17 +204,17 @@ export class RegistrationsService {
 
   /**
    * Busca una inscripción específica por su ID
-   * 
+   *
    * @async
    * @method findOne
    * @param {number} id - ID de la inscripción
    * @returns {Promise<EventRegistration>} Inscripción con relaciones cargadas
    * @throws {NotFoundException} Si la inscripción no existe
-   * 
+   *
    * @description
    * Obtiene una inscripción específica incluyendo datos completos
    * del usuario y evento relacionados mediante eager loading.
-   * 
+   *
    * @security
    * No implementa filtrado por rol. El controlador debe validar
    * que el usuario tenga permisos para acceder a esta inscripción.
@@ -239,21 +239,21 @@ export class RegistrationsService {
 
   /**
    * Actualiza una inscripción existente
-   * 
+   *
    * @async
    * @method update
    * @param {number} id - ID de la inscripción a actualizar
    * @param {UpdateRegistrationDTO} dto - Datos a actualizar (userId, eventId)
    * @returns {Promise<EventRegistration>} Inscripción actualizada
    * @throws {NotFoundException} Si la inscripción, usuario o evento no existen
-   * 
+   *
    * @description
    * Permite cambiar el usuario o evento de una inscripción existente.
    * Casos de uso:
    * - Transferir una inscripción a otro usuario
    * - Cambiar el evento de una inscripción
    * - Actualizar ambos simultáneamente
-   * 
+   *
    * Proceso:
    * 1. Verifica que la inscripción existe
    * 2. Si hay nuevo userId, valida que el usuario existe
@@ -301,7 +301,7 @@ export class RegistrationsService {
      * Solo si dto.eventId está presente
      */
     if (dto.eventId) {
-       /**
+      /**
        * Búsqueda del nuevo evento
        */
       const event = await this.eventRepo.findOne({
@@ -328,18 +328,18 @@ export class RegistrationsService {
 
   /**
    * Elimina una inscripción del sistema
-   * 
+   *
    * @async
    * @method remove
    * @param {number} id - ID de la inscripción a eliminar
    * @returns {Promise<EventRegistration>} Inscripción eliminada (con datos completos)
    * @throws {NotFoundException} Si la inscripción no existe
-   * 
+   *
    * @description
    * Cancela una inscripción eliminándola de la base de datos.
    * Retorna los datos completos de la inscripción eliminada
    * para confirmación o logging.
-   * 
+   *
    */
   async remove(id: number) {
     /**
@@ -358,7 +358,7 @@ export class RegistrationsService {
     /**
      * Eliminación física del registro
      * delete() ejecuta DELETE FROM event_registration WHERE id = ?
-     * 
+     *
      * Nota: Se usa delete() en lugar de remove() para mejor rendimiento
      * cuando no se necesitan hooks de entidad
      */

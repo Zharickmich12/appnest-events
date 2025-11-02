@@ -20,6 +20,7 @@ import {
   UseGuards,
   UseFilters,
   UseInterceptors,
+  BadRequestException,
 } from '@nestjs/common';
 /**
  * Servicio con la lógica de negocio de usuarios
@@ -63,20 +64,20 @@ import { UserRole } from 'src/entities/user.entity';
 
 /**
  * Controlador de usuarios
- * 
+ *
  * @class UsersController
  * @decorator @Controller('users')
- * 
+ *
  * @description
  * Maneja todas las operaciones CRUD relacionadas con usuarios.
  * Prefijo de ruta: /users
- * 
+ *
  * Todas las rutas están protegidas por:
  * - JwtAuthGuard: Requiere token JWT válido
  * - RolesGuard: Verifica roles mediante decorador @Roles
  * - HttpExceptionFilter: Formatea errores HTTP de manera consistente
  * - SanitizeResponseInterceptor: Elimina datos sensibles (ej: password)
- * 
+ *
  * Seguridad:
  * - Solo usuarios con rol ADMIN pueden acceder a todos los endpoints
  * - Los tokens JWT deben incluirse en el header Authorization: Bearer <token>
@@ -90,10 +91,10 @@ import { UserRole } from 'src/entities/user.entity';
 export class UsersController {
   /**
    * Constructor del controlador
-   * 
+   *
    * @constructor
    * @param {UsersService} usersService - Servicio inyectado con lógica de usuarios
-   * 
+   *
    * @description
    * Inyecta UsersService para delegar toda la lógica de negocio.
    * El controlador se mantiene ligero, solo manejando HTTP.
@@ -102,40 +103,40 @@ export class UsersController {
 
   /**
    * Crea un nuevo usuario en el sistema
-   * 
+   *
    * @method create
    * @decorator @Post
    * @decorator @Roles(UserRole.ADMIN)
    * @route POST /users
    * @access ADMIN
-   * 
+   *
    * @param {CreateUserDto} dto - Datos del nuevo usuario (validados)
    * @returns {Promise<User>} Usuario creado (sin contraseña)
-   * 
+   *
    * @description
    * Registra un nuevo usuario con los siguientes pasos:
    * 1. Valida los datos mediante CreateUserDto
    * 2. Normaliza el nombre (trim + mayúsculas)
    * 3. Delega creación al servicio (hash de password + persistencia)
    * 4. Retorna usuario creado (contraseña removida por interceptor)
-   * 
+   *
    * @throws {BadRequestException} Si el email ya está registrado
    * @throws {UnauthorizedException} Si no hay token JWT válido
    * @throws {ForbiddenException} Si el usuario no es ADMIN
-   * 
+   *
    * @security
    * - Solo ADMIN puede crear usuarios
    * - Contraseña hasheada automáticamente por el servicio
    * - Email debe ser único (validado en servicio)
    */
   @Post()
-  @Roles(UserRole.ADMIN)// Solo admin puede usar esta ruta
+  @Roles(UserRole.ADMIN) // Solo admin puede usar esta ruta
   create(@Body() dto: CreateUserDto) {
     /**
      * Normalización del nombre antes de guardar
      * - trim(): Elimina espacios al inicio y final
      * - toUpperCase(): Convierte a mayúsculas para consistencia
-     * 
+     *
      * Solo se aplica si el campo existe y es string (validación extra)
      */
     if (dto.name && typeof dto.name === 'string') {
@@ -151,55 +152,55 @@ export class UsersController {
     return this.usersService.create(dto);
   }
 
-    /**
+  /**
    * Obtiene la lista completa de usuarios
-   * 
+   *
    * @method findAll
    * @decorator @Get
    * @decorator @Roles(UserRole.ADMIN)
    * @route GET /users
    * @access ADMIN
-   * 
+   *
    * @returns {Promise<User[]>} Array de usuarios (sin contraseñas)
-   * 
+   *
    * @description
    * Retorna todos los usuarios registrados en el sistema.
    * Las contraseñas se eliminan automáticamente por SanitizeResponseInterceptor.
-   * 
+   *
    * @throws {UnauthorizedException} Si no hay token JWT válido
    * @throws {ForbiddenException} Si el usuario no es ADMIN
-   * 
+   *
    * @security
    * - Solo ADMIN puede listar usuarios
    * - Contraseñas sanitizadas automáticamente
    */
   @Get()
-  @Roles(UserRole.ADMIN)// Solo admin puede usar esta ruta
+  @Roles(UserRole.ADMIN) // Solo admin puede usar esta ruta
   findAll() {
     return this.usersService.findAll();
   }
 
   /**
    * Obtiene un usuario específico por su ID
-   * 
+   *
    * @method findOne
    * @decorator @Get(':id')
    * @decorator @Roles(UserRole.ADMIN)
    * @route GET /users/:id
    * @access ADMIN
-   * 
+   *
    * @param {number} id - ID del usuario (parseado y validado)
    * @returns {Promise<User>} Usuario encontrado (sin contraseña)
-   * 
+   *
    * @description
    * Busca un usuario por su identificador único.
    * ParseIntPipeCustom valida que el parámetro sea un número entero válido.
-   * 
+   *
    * @throws {BadRequestException} Si el ID no es un número válido
    * @throws {NotFoundException} Si el usuario no existe
    * @throws {UnauthorizedException} Si no hay token JWT válido
    * @throws {ForbiddenException} Si el usuario no es ADMIN
-   * 
+   *
    * @security
    * - Solo ADMIN puede consultar usuarios
    * - Contraseña sanitizada automáticamente
@@ -217,32 +218,30 @@ export class UsersController {
 
   /**
    * Actualiza los datos de un usuario existente
-   * 
+   *
    * @method update
    * @decorator @Put(':id')
    * @decorator @Roles(UserRole.ADMIN)
    * @route PUT /users/:id
    * @access ADMIN
-   * 
+   *
    * @param {number} id - ID del usuario a actualizar
    * @param {UpdateUserDto} dto - Datos a actualizar (parciales)
    * @returns {Promise<object>} Mensaje y datos actualizados del usuario
-   * 
+   *
    * @description
-   * Actualiza parcialmente los datos de un usuario.
-   * Permite actualizar:
+   * Realiza actualización parcial.
+   *    * Permite actualizar:
    * - Nombre (normalizado a mayúsculas)
    * - Email (validando unicidad)
    * - Contraseña (hasheada automáticamente)
    * - Rol
-   * 
+   *
    * El mensaje de respuesta varía según si se actualizó la contraseña o no.
-   * 
-   * @throws {BadRequestException} Si el ID no es válido o el email ya existe
-   * @throws {NotFoundException} Si el usuario no existe
+   * @throws {BadRequestException} Si no se envían campos en el body
    * @throws {UnauthorizedException} Si no hay token JWT válido
    * @throws {ForbiddenException} Si el usuario no es ADMIN
-   * 
+   *
    * @security
    * - Solo ADMIN puede actualizar usuarios
    * - Nueva contraseña hasheada con bcrypt
@@ -251,19 +250,24 @@ export class UsersController {
    */
   @Put(':id')
   @Roles(UserRole.ADMIN)
-  // Solo admin puede usar esta ruta
   update(
     @Param('id', ParseIntPipeCustom) id: number,
     @Body() dto: UpdateUserDto,
   ) {
     /**
-     * Normalización del nombre si viene en el DTO
-     * - trim(): Elimina espacios al inicio y final
-     * - toUpperCase(): Convierte a mayúsculas para consistencia
-     * 
-     * Se aplica antes de enviar al servicio para mantener
-     * el formato estándar de nombres en la base de datos
+     * Verifica que el body tenga al menos un campo enviado
      */
+    const hasAtLeastOneField = Object.values(dto).some((v) => v !== undefined);
+
+    /**
+     * Si el body está vacío lanza error 400
+     */
+    if (!hasAtLeastOneField) {
+      throw new BadRequestException(
+        'Debe enviar al menos un campo para actualizar.',
+      );
+    }
+
     if (dto.name && typeof dto.name === 'string') {
       dto.name = dto.name.trim().toUpperCase();
     }
@@ -282,31 +286,31 @@ export class UsersController {
 
   /**
    * Elimina un usuario del sistema
-   * 
+   *
    * @method remove
    * @decorator @Delete(':id')
    * @decorator @Roles(UserRole.ADMIN)
    * @route DELETE /users/:id
    * @access ADMIN
-   * 
+   *
    * @param {number} id - ID del usuario a eliminar
    * @returns {Promise<{message: string}>} Mensaje de confirmación
-   * 
+   *
    * @description
    * Elimina permanentemente un usuario de la base de datos.
    * Esta es una operación destructiva e irreversible.
-   * 
+   *
    * @warning
    * - La eliminación es permanente (hard delete)
    * - No se implementa soft delete en este endpoint
    * - Verificar dependencias/relaciones antes de eliminar
    * - Puede fallar si hay restricciones de clave foránea
-   * 
+   *
    * @throws {BadRequestException} Si el ID no es válido
    * @throws {NotFoundException} Si el usuario no existe
    * @throws {UnauthorizedException} Si no hay token JWT válido
    * @throws {ForbiddenException} Si el usuario no es ADMIN
-   * 
+   *
    * @security
    * - Solo ADMIN puede eliminar usuarios
    * - Validación de existencia previa a eliminación

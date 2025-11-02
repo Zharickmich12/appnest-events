@@ -2,7 +2,7 @@ import { IsInt, IsOptional, IsPositive } from 'class-validator';
 
 /**
  * @class UpdateRegistrationDTO
- * @description Data Transfer Object (DTO) utilizado para la actualización parcial (PATCH) de una inscripción existente. 
+ * @description Data Transfer Object (DTO) utilizado para la actualización parcial (PATCH) de una inscripción existente.
  * Diseñado para permitir la modificación atómica de las referencias foráneas: userId y eventId.
  */
 export class UpdateRegistrationDTO {

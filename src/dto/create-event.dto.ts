@@ -50,7 +50,7 @@ export class CreateEventDTO {
   capacity?: number;
 
   // Correo electronico asociado al evento osea la persona responsable (obligatorio)
-  @IsEmail()
-  @IsNotEmpty()
+  @IsEmail({}, { message: 'Debe proporcionar un correo electrónico válido.' })
+  @IsNotEmpty({ message: 'El correo electrónico es obligatorio.' })
   email: string;
 }

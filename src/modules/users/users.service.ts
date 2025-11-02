@@ -40,27 +40,27 @@ import * as bcrypt from 'bcrypt';
 
 /**
  * Servicio de gestión de usuarios
- * 
+ *
  * @class UsersService
  * @decorator @Injectable
- * 
+ *
  * @description
  * Proporciona métodos para:
  * - Crear usuarios con validación de duplicados y hash de contraseñas
  * - Consultar usuarios (todos o por ID)
  * - Actualizar información de usuarios
  * - Eliminar usuarios del sistema
- * 
+ *
  * Todas las contraseñas se almacenan hasheadas usando bcrypt con salt rounds = 10
  */
 @Injectable()
 export class UsersService {
   /**
    * Constructor del servicio
-   * 
+   *
    * @constructor
    * @param {Repository<User>} userRepository - Repositorio de TypeORM para User
-   * 
+   *
    * @description
    * Inyecta el repositorio de User para realizar operaciones de base de datos.
    * TypeORM proporciona métodos predefinidos (find, findOne, save, remove, etc.)
@@ -72,20 +72,20 @@ export class UsersService {
 
   /**
    * Crea un nuevo usuario en la base de datos
-   * 
+   *
    * @async
    * @method create
    * @param {CreateUserDto} data - Datos del nuevo usuario (validados por DTO)
    * @returns {Promise<User>} Usuario creado con ID generado
    * @throws {BadRequestException} Si el email ya está registrado
-   * 
+   *
    * @description
    * Proceso:
    * 1. Verifica que el email no exista en la base de datos
    * 2. Hashea la contraseña con bcrypt (salt rounds: 10)
    * 3. Crea la instancia del usuario
    * 4. Persiste en base de datos
-   * 
+   *
    * @security
    * - Previene registro de emails duplicados
    * - Almacena contraseñas hasheadas, nunca en texto plano
@@ -112,7 +112,7 @@ export class UsersService {
      * bcrypt.hash(plainText, saltRounds)
      * - plainText: contraseña en texto plano
      * - saltRounds: 10 (balance entre seguridad y rendimiento)
-     * 
+     *
      * Genera un hash único incluso para contraseñas idénticas
      */
     data.password = await bcrypt.hash(data.password, 10);
@@ -131,11 +131,11 @@ export class UsersService {
 
   /**
    * Obtiene todos los usuarios registrados en el sistema
-   * 
+   *
    * @async
    * @method findAll
    * @returns {Promise<User[]>} Array con todos los usuarios
-   * 
+   *
    * @description
    * Retorna la lista completa de usuarios sin paginación.
    */
@@ -149,13 +149,13 @@ export class UsersService {
 
   /**
    * Busca un usuario específico por su ID
-   * 
+   *
    * @async
    * @method findOne
    * @param {number} id - ID del usuario a buscar
    * @returns {Promise<User>} Usuario encontrado
    * @throws {NotFoundException} Si el usuario no existe
-   * 
+   *
    * @description
    * Método utilizado internamente por update() y remove().
    * Lanza excepción si no se encuentra el usuario para evitar operaciones inválidas.
@@ -178,7 +178,7 @@ export class UsersService {
 
   /**
    * Actualiza los datos de un usuario existente
-   * 
+   *
    * @async
    * @method update
    * @param {number} id - ID del usuario a actualizar
@@ -186,7 +186,7 @@ export class UsersService {
    * @returns {Promise<object>} Objeto con mensaje y datos del usuario actualizado
    * @throws {NotFoundException} Si el usuario no existe
    * @throws {BadRequestException} Si el nuevo email ya está en uso
-   * 
+   *
    * @description
    * Proceso:
    * 1. Verifica que el usuario existe
@@ -194,7 +194,7 @@ export class UsersService {
    * 3. Si hay nueva contraseña, la hashea
    * 4. Actualiza los datos
    * 5. Retorna mensaje contextual según si se actualizó la contraseña
-   * 
+   *
    * @security
    * - Hashea nuevas contraseñas con bcrypt
    * - Valida unicidad de email
@@ -267,13 +267,13 @@ export class UsersService {
 
   /**
    * Elimina un usuario de la base de datos
-   * 
+   *
    * @async
    * @method remove
    * @param {number} id - ID del usuario a eliminar
    * @returns {Promise<{message: string}>} Mensaje de confirmación
    * @throws {NotFoundException} Si el usuario no existe
-   * 
+   *
    * @description
    * Eliminación física del registro (DELETE permanente).
    * Para sistemas en producción, considerar implementar soft delete.
@@ -287,7 +287,7 @@ export class UsersService {
     /**
      * remove() elimina físicamente el registro de la base de datos
      * Equivalente a: DELETE FROM user WHERE id = ?
-    */
+     */
     await this.userRepository.remove(user);
     /**
      * Retorna mensaje de confirmación con el ID eliminado

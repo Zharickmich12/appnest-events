@@ -22,7 +22,7 @@ export class Event {
    * @description Título descriptivo y obligatorio del evento.
    * @typeorm @Column - Mapea a una columna VARCHAR/TEXT/STRING no nula.
    */
-  @Column()
+  @Column({ unique: true })
   title: string;
 
   /**

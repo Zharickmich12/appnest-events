@@ -11,7 +11,7 @@ import { Event } from './event.entity';
 
 /**
  * @class EventRegistration
- * @description Entidad de la base de datos que actúa como una tabla de unión (muchos a muchos con metadatos) entre las entidades User y Event. 
+ * @description Entidad de la base de datos que actúa como una tabla de unión (muchos a muchos con metadatos) entre las entidades User y Event.
  * Mapea a una tabla denominada "event_registration".
  */
 @Entity()

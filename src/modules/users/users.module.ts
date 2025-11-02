@@ -28,42 +28,42 @@ import { User } from 'src/entities/user.entity';
 
 /**
  * Módulo de usuarios
- * 
+ *
  * @class UsersModule
  * @decorator @Module
- * 
+ *
  * @description
  * Encapsula toda la funcionalidad relacionada con usuarios:
  * - Controlador: Define endpoints HTTP (GET, POST, PUT, DELETE)
  * - Servicio: Implementa lógica de negocio y operaciones CRUD
  * - Repositorio: Proporciona acceso a la tabla 'user' mediante TypeORM
- * 
+ *
  * El servicio se exporta para permitir su uso en otros módulos,
  * especialmente en AuthModule para validación de credenciales.
- * 
+ *
  * @property {Array} imports - Módulos importados
  * @property {Array} controllers - Controladores del módulo
  * @property {Array} providers - Servicios disponibles
  * @property {Array} exports - Servicios exportados para otros módulos
- * 
+ *
  */
 @Module({
   /**
    * TypeOrmModule.forFeature()
    * Registra la entidad User en el contexto de TypeORM
-   * 
+   *
    * @description
    * Permite inyectar Repository<User> en servicios usando @InjectRepository(User).
    * TypeORM crea automáticamente el repositorio con métodos CRUD predefinidos.
-   * 
+   *
    * El repositorio proporciona acceso a la tabla 'user' definida en la entidad.
    */
   imports: [TypeOrmModule.forFeature([User])],
   /**
    * Controladores registrados en el módulo
-   * 
+   *
    * @property {UsersController} UsersController - Maneja rutas /users
-   * 
+   *
    * @description
    * UsersController define los siguientes endpoints:
    * - POST   /users       → Crear usuario
@@ -71,15 +71,15 @@ import { User } from 'src/entities/user.entity';
    * - GET    /users/:id   → Obtener usuario por ID
    * - PUT    /users/:id   → Actualizar usuario
    * - DELETE /users/:id   → Eliminar usuario
-   * 
+   *
    * Todas las rutas están protegidas por JwtAuthGuard y RolesGuard.
    */
   controllers: [UsersController],
   /**
    * Servicios disponibles en el módulo
-   * 
+   *
    * @property {UsersService} UsersService - Lógica de negocio de usuarios
-   * 
+   *
    * @description
    * UsersService implementa operaciones CRUD y validaciones:
    * - create(): Registro de usuarios con hash de contraseñas
@@ -91,15 +91,15 @@ import { User } from 'src/entities/user.entity';
   providers: [UsersService],
   /**
    * Servicios y módulos exportados para uso en otros módulos
-   * 
+   *
    * @exports {UsersService} - Permite inyectar el servicio en otros módulos
    * @exports {TypeOrmModule} - Permite inyectar Repository<User> en otros módulos
-   * 
+   *
    * @description
    * UsersService se exporta principalmente para AuthModule, que necesita:
    * - Buscar usuarios por email para autenticación
    * - Validar credenciales durante el login
-   * 
+   *
    * TypeOrmModule se exporta para permitir acceso directo al repositorio
    * en módulos que necesiten consultas específicas sin duplicar lógica.
    */
