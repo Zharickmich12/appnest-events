@@ -55,6 +55,16 @@ import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
  * Interceptor para sanitización de respuestas
  */
 import { SanitizeResponseInterceptor } from 'src/common/interceptors/sanitize-response.interceptor';
+/**
+ * Importaciones Swagger
+ * Permiten documentar los endpoints de inscripciones en Swagger UI.
+ */
+import { 
+  ApiTags, 
+  ApiBearerAuth, 
+  ApiOperation, 
+  ApiResponse 
+} from '@nestjs/swagger';
 
 /**
  * Controlador de inscripciones a eventos
@@ -72,10 +82,12 @@ import { SanitizeResponseInterceptor } from 'src/common/interceptors/sanitize-re
  * - HttpExceptionFilter: Formatea errores consistentemente
  * - SanitizeResponseInterceptor: Elimina datos sensibles
  */
+@ApiTags('Inscripciones')
+@ApiBearerAuth()
 @UseFilters(HttpExceptionFilter) // filtro global de excepciones
 @UseInterceptors(SanitizeResponseInterceptor) // Interceptor para formatear respuestas y eliminar datos sensibles
 @UseGuards(JwtAuthGuard, RolesGuard) // Protege todas las rutas del controlador
-@Controller('registrations') // Define el prefijo de las rutas que pertenecen a este controlador
+@Controller('/api/registrations') // Define el prefijo de las rutas que pertenecen a este controlador
 export class RegistrationsController {
   /**
    * Constructor del controlador
@@ -115,6 +127,14 @@ export class RegistrationsController {
    */
   @Post()
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER) // Solo admin y organizer pueden usar esta ruta
+  @ApiOperation({
+    summary: 'Crear inscripción',
+    description:
+      'Permite a ADMIN y ORGANIZER registrar un usuario en un evento.',
+  })
+  @ApiResponse({ status: 201, description: 'Inscripción creada exitosamente.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos o faltantes.' })
+  @ApiResponse({ status: 403, description: 'Acceso denegado. Rol no autorizado.' })
   create(@Body() dto: CreateRegistrationDTO) {
     /**
      * Delega la creación al servicio que:
@@ -161,6 +181,16 @@ export class RegistrationsController {
    */
   @Get()
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER, UserRole.ATTENDEE) // todos los roles tienen acceso
+  @ApiOperation({
+    summary: 'Obtener inscripciones',
+    description:
+      'Devuelve todas las inscripciones. ATTENDEE solo ve las suyas.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de inscripciones obtenida correctamente.',
+  })
+  @ApiResponse({ status: 401, description: 'Token JWT faltante o inválido.' })
   findAll(@Request() req: { user: { userId: number; role: UserRole } }) {
     /**
      * Extrae userId y role del token JWT decodificado
@@ -200,6 +230,14 @@ export class RegistrationsController {
    */
   @Get(':id')
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER) // Solo admin y organizer pueden usar esta ruta
+  @ApiOperation({
+    summary: 'Obtener inscripción por ID',
+    description:
+      'Devuelve los detalles de una inscripción específica mediante su ID.',
+  })
+  @ApiResponse({ status: 200, description: 'Inscripción encontrada correctamente.' })
+  @ApiResponse({ status: 404, description: 'Inscripción no encontrada.' })
+  @ApiResponse({ status: 403, description: 'Acceso denegado. Rol no autorizado.' })
   findOne(@Param('id', ParseIntPipeCustom) id: number) {
     /**
      * ParseIntPipeCustom valida y convierte el parámetro :id
@@ -235,6 +273,17 @@ export class RegistrationsController {
    */
   @Put(':id')
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER) // Solo admin y organizer usar esta ruta
+  @ApiOperation({
+    summary: 'Actualizar inscripción',
+    description:
+      'Permite a ADMIN y ORGANIZER modificar los datos de una inscripción existente.',
+  })
+  @ApiResponse({ status: 200, description: 'Inscripción actualizada exitosamente.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Debe enviar al menos un campo para actualizar.',
+  })
+  @ApiResponse({ status: 404, description: 'Inscripción no encontrada.' })
   update(
     @Param('id', ParseIntPipeCustom) id: number,
     @Body() dto: UpdateRegistrationDTO,
@@ -289,6 +338,14 @@ export class RegistrationsController {
    */
   @Delete(':id')
   @Roles(UserRole.ADMIN) // Solo admin puede usar esta ruta
+  @ApiOperation({
+    summary: 'Eliminar inscripción',
+    description:
+      'Permite a ADMIN eliminar una inscripción del sistema de forma permanente.',
+  })
+  @ApiResponse({ status: 200, description: 'Inscripción eliminada correctamente.' })
+  @ApiResponse({ status: 404, description: 'Inscripción no encontrada.' })
+  @ApiResponse({ status: 403, description: 'Solo ADMIN puede eliminar inscripciones.' })
   remove(@Param('id', ParseIntPipeCustom) id: number) {
     /**
      * ParseIntPipeCustom valida el parámetro :id

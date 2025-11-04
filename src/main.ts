@@ -30,6 +30,12 @@ import { LoggingInterceptor } from 'src/common/interceptors/logging.interceptor'
  * SanitizeResponseInterceptor: Interceptor para sanitización de respuestas
  */
 import { SanitizeResponseInterceptor } from 'src/common/interceptors/sanitize-response.interceptor';
+/**
+ * DocumentBuilder y SwaggerModule: Importaciones necesarias para configurar y habilitar la documentación de la API
+ * mediante Swagger. Permite generar una interfaz visual interactiva donde se 
+ * pueden explorar y probar los endpoints de la aplicación.
+ */
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 /**
  * Función bootstrap asíncrona que inicializa y configura la aplicación NestJS
@@ -56,6 +62,28 @@ async function bootstrap() {
    * @type {INestApplication}
    */
   const app = await NestFactory.create(AppModule);
+
+  /**
+   * Configuración de Swagger
+   * Se define la configuración base para generar la documentación de la API.
+   * Incluye título, descripción, versión y esquema de autenticación.
+   * La documentación será accesible en el endpoint `/api/docs`.
+   */
+  const configDoc = new DocumentBuilder()
+    .setTitle('API Gestión de eventos')
+    .setDescription('Documentación de la API de EventsApp')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+
+   /**
+   * Creación y configuración del documento Swagger
+   * Se genera el documento Swagger a partir de la configuración anterior
+   * y se expone la interfaz visual en la ruta especificada.
+   */
+  const document = SwaggerModule.createDocument(app, configDoc);
+  SwaggerModule.setup('api/docs', app, document);
+
   /**
    * Configura ValidationPipe global para validación automática de DTOs
    * en todos los endpoints de la aplicación

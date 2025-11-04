@@ -1,4 +1,5 @@
 import { IsInt, IsOptional, IsPositive } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
  * @class UpdateRegistrationDTO
@@ -14,6 +15,7 @@ export class UpdateRegistrationDTO {
    * @validation @IsInt() - Si se proporciona, el valor debe ser un número entero (sin decimales).
    * @validation @IsPositive() - Si se proporciona, el valor debe ser un número positivo (mayor que cero).
    */
+  @ApiPropertyOptional({ description: 'Nuevo ID del usuario', example: 1, minimum: 1 })
   @IsOptional()
   @IsInt({ message: 'El ID del usuario debe ser un número entero' })
   @IsPositive({ message: 'El ID del usuario debe ser un número positivo' })
@@ -27,6 +29,7 @@ export class UpdateRegistrationDTO {
    * @validation @IsInt() - Si se proporciona, el valor debe ser un número entero.
    * @validation @IsPositive() - Si se proporciona, el valor debe ser un número positivo.
    */
+  @ApiPropertyOptional({ description: 'Nuevo ID del evento', example: 2, minimum: 1 })
   @IsOptional()
   @IsInt({ message: 'El ID del evento debe ser un número entero' })
   @IsPositive({ message: 'El ID del evento debe ser un número positivo' })

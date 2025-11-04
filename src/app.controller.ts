@@ -33,7 +33,7 @@ import { AppService } from './app.service';
  * 
  * @param {string} prefix - Prefijo de ruta (vacío = ruta raíz)
  */
-@Controller()
+@Controller('/api/')
 export class AppController {
   /**
    * Constructor del controlador

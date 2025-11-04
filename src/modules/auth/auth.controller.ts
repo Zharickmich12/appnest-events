@@ -17,11 +17,23 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { LoginUserDTO } from 'src/dto/login-user.dto';
 import { JwtAuthGuard } from './jwt.guard';
+/**
+ * Importaciones para la documentación Swagger
+ * Se utilizan decoradores de Swagger para generar la documentación
+ * de los endpoints de autenticación (login, registro, perfil).
+ */
+import { 
+  ApiTags, 
+  ApiOperation, 
+  ApiResponse, 
+  ApiBearerAuth 
+} from '@nestjs/swagger';
 
 /**
  * Controlador principal para rutas /auth.
  */
-@Controller('auth')
+@ApiTags('Auth')
+@Controller('/api/auth')
 export class AuthController {
   /**
    * Inyección de dependencia del servicio AuthService,
@@ -35,6 +47,9 @@ export class AuthController {
    * @returns Objeto con mensaje de éxito y datos del usuario creado.
    */
   @Post('register')
+  @ApiOperation({ summary: 'Registro de usuario', description: 'Crea un nuevo usuario en el sistema.' })
+  @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos o faltantes en el registro.' })
   register(@Body() data: CreateUserDto) {
     return this.authService.register(data);
   }
@@ -46,6 +61,9 @@ export class AuthController {
    * @returns Objeto con el token de acceso (accessToken).
    */
   @Post('login')
+  @ApiOperation({ summary: 'Inicio de sesión', description: 'Autentica al usuario y devuelve un token JWT.' })
+  @ApiResponse({ status: 200, description: 'Inicio de sesión exitoso. Retorna el token de autenticación.' })
+  @ApiResponse({ status: 401, description: 'Credenciales incorrectas.' })
   async login(@Body() data: LoginUserDTO) {
     return this.authService.login(data);
   }
@@ -58,6 +76,10 @@ export class AuthController {
    */
   @UseGuards(JwtAuthGuard)
   @Get('profile')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Perfil de usuario', description: 'Obtiene la información del usuario autenticado.' })
+  @ApiResponse({ status: 200, description: 'Información del perfil obtenida correctamente.' })
+  @ApiResponse({ status: 401, description: 'Token inválido o no proporcionado.' })
   getProfile(@Request() req) {
     return req.user;
   }

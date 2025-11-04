@@ -61,6 +61,18 @@ import { RolesGuard } from 'src/modules/auth/roles.guard';
  * Enum con los roles de usuario disponibles
  */
 import { UserRole } from 'src/entities/user.entity';
+/**
+ * Importaciones Swagger
+ * Permiten documentar los endpoints de inscripciones en Swagger UI.
+ */
+import { 
+  ApiTags, 
+  ApiBearerAuth, 
+  ApiOperation, 
+  ApiResponse, 
+  ApiParam, 
+  ApiBody 
+} from '@nestjs/swagger';
 
 /**
  * Controlador de usuarios
@@ -84,7 +96,9 @@ import { UserRole } from 'src/entities/user.entity';
  * - Las contraseñas nunca se retornan en las respuestas (sanitizadas)
  */
 
-@Controller('users')
+@ApiTags('Users')
+@ApiBearerAuth()
+@Controller('/api/users')
 @UseGuards(JwtAuthGuard, RolesGuard) // Protege todas las rutas del controlador
 @UseFilters(HttpExceptionFilter) // Aplica el filtro a todas las rutas de este controlador
 @UseInterceptors(SanitizeResponseInterceptor) // Interceptor para formatear respuestas y eliminar datos sensibles
@@ -131,6 +145,12 @@ export class UsersController {
    */
   @Post()
   @Roles(UserRole.ADMIN) // Solo admin puede usar esta ruta
+  @ApiOperation({ summary: 'Crea un nuevo usuario', description: 'Solo ADMIN puede crear usuarios.' })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({ status: 201, description: 'Usuario creado exitosamente.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos o email duplicado.' })
+  @ApiResponse({ status: 401, description: 'Token no válido o ausente.' })
+  @ApiResponse({ status: 403, description: 'Permisos insuficientes.' })
   create(@Body() dto: CreateUserDto) {
     /**
      * Normalización del nombre antes de guardar
@@ -176,6 +196,10 @@ export class UsersController {
    */
   @Get()
   @Roles(UserRole.ADMIN) // Solo admin puede usar esta ruta
+  @ApiOperation({ summary: 'Obtiene todos los usuarios', description: 'Solo ADMIN puede ver la lista completa de usuarios.' })
+  @ApiResponse({ status: 200, description: 'Lista de usuarios obtenida exitosamente.' })
+  @ApiResponse({ status: 401, description: 'Token no válido o ausente.' })
+  @ApiResponse({ status: 403, description: 'Permisos insuficientes.' })
   findAll() {
     return this.usersService.findAll();
   }
@@ -207,6 +231,10 @@ export class UsersController {
    */
   @Get(':id')
   @Roles(UserRole.ADMIN) // Solo admin puede usar esta ruta
+  @ApiOperation({ summary: 'Obtiene un usuario por ID', description: 'Devuelve el usuario correspondiente al ID especificado.' })
+  @ApiParam({ name: 'id', type: Number, description: 'ID del usuario' })
+  @ApiResponse({ status: 200, description: 'Usuario encontrado exitosamente.' })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
   findOne(@Param('id', ParseIntPipeCustom) id: number) {
     /**
      * ParseIntPipeCustom se ejecuta antes del método
@@ -250,6 +278,12 @@ export class UsersController {
    */
   @Put(':id')
   @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Actualiza un usuario existente', description: 'Permite actualizar datos parciales de un usuario existente.' })
+  @ApiParam({ name: 'id', type: Number, description: 'ID del usuario' })
+  @ApiBody({ type: UpdateUserDto })
+  @ApiResponse({ status: 200, description: 'Usuario actualizado exitosamente.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos o body vacío.' })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
   update(
     @Param('id', ParseIntPipeCustom) id: number,
     @Body() dto: UpdateUserDto,
@@ -316,8 +350,11 @@ export class UsersController {
    * - Validación de existencia previa a eliminación
    */
   @Delete(':id')
-  @Roles(UserRole.ADMIN)
-  // Solo admin puede usar esta ruta
+  @Roles(UserRole.ADMIN) // Solo admin puede usar esta ruta
+  @ApiOperation({ summary: 'Elimina un usuario', description: 'Elimina permanentemente un usuario por su ID.' })
+  @ApiParam({ name: 'id', type: Number, description: 'ID del usuario' })
+  @ApiResponse({ status: 200, description: 'Usuario eliminado exitosamente.' })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
   remove(@Param('id', ParseIntPipeCustom) id: number) {
     /**
      * ParseIntPipeCustom valida el parámetro :id

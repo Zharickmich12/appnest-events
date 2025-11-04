@@ -45,6 +45,17 @@ import { CreateEventDTO } from 'src/dto/create-event.dto';
 import { UpdateEventDTO } from 'src/dto/update-event.dto';
 
 /**
+ * Importaciones Swagger
+ * Permiten documentar los endpoints de eventos en Swagger UI.
+ */
+import { 
+  ApiTags, 
+  ApiBearerAuth, 
+  ApiOperation, 
+  ApiResponse 
+} from '@nestjs/swagger';
+
+/**
  * Controlador de eventos
  *
  * @class EventsAppController
@@ -60,7 +71,9 @@ import { UpdateEventDTO } from 'src/dto/update-event.dto';
  * - HttpExceptionFilter: Formatea errores HTTP consistentemente
  * - SanitizeResponseInterceptor: Limpia datos sensibles de respuestas
  */
-@Controller('eventsapp')
+@ApiTags('Eventos')
+@ApiBearerAuth()
+@Controller('/api/eventsapp')
 @UseGuards(JwtAuthGuard, RolesGuard) // Protege todas las rutas con autenticación y roles
 @UseFilters(HttpExceptionFilter) // Aplica el filtro global de excepciones.
 @UseInterceptors(SanitizeResponseInterceptor) // Interceptor para formatear respuestas y eliminar datos sensibles
@@ -93,6 +106,12 @@ export class EventsAppController {
    */
   @Get()
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER, UserRole.ATTENDEE) // todos los roles tienen acceso
+  @ApiOperation({
+    summary: 'Obtener todos los eventos',
+    description: 'Retorna una lista de todos los eventos con su conteo total.',
+  })
+  @ApiResponse({ status: 200, description: 'Lista de eventos obtenida correctamente.' })
+  @ApiResponse({ status: 401, description: 'No autorizado. Token JWT faltante o inválido.' })
   async getEvents() {
     const events = await this.eventsAppService.findAll(); // Obtiene la lista completa de los eventos
     const count = await this.eventsAppService.getEventsCount(); // Cuenta el total de eventos
@@ -131,6 +150,13 @@ export class EventsAppController {
    */
   @Get(':id')
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER, UserRole.ATTENDEE) // todos los roles tienen acceso
+  @ApiOperation({
+    summary: 'Obtener evento por ID',
+    description: 'Devuelve los detalles de un evento específico mediante su ID.',
+  })
+  @ApiResponse({ status: 200, description: 'Evento encontrado correctamente.' })
+  @ApiResponse({ status: 400, description: 'El ID proporcionado no es válido.' })
+  @ApiResponse({ status: 404, description: 'Evento no encontrado.' })
   async getEventById(@Param('id', ParseIntPipeCustom) id: number) {
     const event = await this.eventsAppService.findOne(id); // Busca el evento por su id
     /**
@@ -166,6 +192,13 @@ export class EventsAppController {
    */
   @Post()
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER) // Solo admin y organizer pueden crear
+  @ApiOperation({
+    summary: 'Crear un nuevo evento',
+    description: 'Permite a ADMIN y ORGANIZER crear un evento con datos validados.',
+  })
+  @ApiResponse({ status: 201, description: 'Evento creado exitosamente.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos o faltantes en la solicitud.' })
+  @ApiResponse({ status: 403, description: 'Acceso denegado. Rol no autorizado.' })
   async create(@Body() dto: CreateEventDTO) {
     /**
      * Delega la creación al servicio que:
@@ -204,6 +237,13 @@ export class EventsAppController {
    */
   @Put(':id')
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER)
+  @ApiOperation({
+    summary: 'Actualizar evento',
+    description: 'Permite a ADMIN y ORGANIZER modificar la información de un evento existente.',
+  })
+  @ApiResponse({ status: 200, description: 'Evento actualizado exitosamente.' })
+  @ApiResponse({ status: 400, description: 'Debe enviar al menos un campo válido para actualizar.' })
+  @ApiResponse({ status: 404, description: 'Evento no encontrado.' })
   async update(
     @Param('id', ParseIntPipeCustom) id: number,
     @Body() dto: UpdateEventDTO,
@@ -259,6 +299,13 @@ export class EventsAppController {
    */
   @Delete(':id')
   @Roles(UserRole.ADMIN) // Solo admin puede eliminar
+  @ApiOperation({
+    summary: 'Eliminar evento',
+    description: 'Elimina un evento por ID. Solo ADMIN tiene permiso para esta acción.',
+  })
+  @ApiResponse({ status: 200, description: 'Evento eliminado correctamente.' })
+  @ApiResponse({ status: 404, description: 'Evento no encontrado.' })
+  @ApiResponse({ status: 403, description: 'Solo ADMIN puede eliminar eventos.' })
   async remove(@Param('id', ParseIntPipeCustom) id: number) {
     /**
      * ParseIntPipeCustom valida el parámetro :id
