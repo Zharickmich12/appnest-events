@@ -1,8 +1,12 @@
-# Gestión de eventos Backend API
+<p align="center">
+  <img src="src/assets/logo.png" alt="Eventia Logo" width="120"/>
+</p>
+
+# Eventia (Gestión de eventos Backend API)
 
 ## Descripción general
 
-**Event Management Backend API** es un proyecto desarrollado con **NestJS** y **TypeORM**, diseñado para gestionar de forma centralizada los usuarios, eventos e inscripciones dentro de un sistema modular.
+**Eventia Backend API** es un proyecto desarrollado con **NestJS** y **TypeORM**, diseñado para gestionar de forma centralizada los usuarios, eventos e inscripciones dentro de un sistema modular.
 
 Su objetivo es proporcionar una **API RESTful escalable, mantenible y segura**, implementando buenas prácticas de arquitectura, manejo de datos relacionales en **MySQL** y autenticación **JWT**.
 
@@ -41,6 +45,7 @@ Además:
 
 - Las **entidades TypeORM** definen las tablas y relaciones en la base de datos.
 - Las **migraciones** gestionan los cambios estructurales del esquema de forma controlada y versionada.
+- La **documentación Swagger** facilita la exploración y prueba de los endpoints.
 
 ```bash
 └── src/                              # Código fuente del proyecto
@@ -135,6 +140,24 @@ npm run start:dev
 
 El backend estará disponible por defecto en:
 http://localhost:3000
+
+## Documentación con Swagger
+
+Eventia incluye documentación automática y navegable con Swagger.
+
+Una vez el servidor esté en ejecución, accede a:
+
+http://localhost:3000/api/docs
+
+Desde allí podrás:
+
+- Ver todos los endpoints disponibles.
+
+- Probar solicitudes POST, GET, PUT, DELETE.
+
+- Autenticarse con JWT usando el botón “Authorize”.
+
+- Consultar los modelos de datos (DTOs) usados en las peticiones.
 
 ## Componentes principales
 
@@ -249,6 +272,7 @@ El sistema se organiza en módulos funcionales:
 - **MySQL** — Base de datos relacional utilizada para persistencia de datos.
 - **JWT (JSON Web Token)** — Sistema de autenticación segura basado en tokens.
 - **Class Validator / Class Transformer** — Librerías para validación y transformación de DTOs en las capas de entrada.
+- **Swagger** — Documentación interactiva de la API.
 
 ## Equipo de Desarrollo
 

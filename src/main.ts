@@ -70,8 +70,8 @@ async function bootstrap() {
    * La documentación será accesible en el endpoint `/api/docs`.
    */
   const configDoc = new DocumentBuilder()
-    .setTitle('API Gestión de eventos')
-    .setDescription('Documentación de la API de EventsApp')
+    .setTitle('API Eventia (Gestión de eventos)')
+    .setDescription('Documentación de la API de Eventia')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
